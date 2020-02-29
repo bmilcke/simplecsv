@@ -1,5 +1,6 @@
 package me.landmesser.csv;
 
+import me.landmesser.csv.exception.CSVConversionException;
 import org.junit.platform.commons.util.StringUtils;
 
 import java.text.NumberFormat;

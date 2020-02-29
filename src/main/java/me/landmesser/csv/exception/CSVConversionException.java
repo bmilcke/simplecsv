@@ -1,4 +1,4 @@
-package me.landmesser.csv;
+package me.landmesser.csv.exception;
 
 public class CSVConversionException extends Exception {
   public CSVConversionException() {

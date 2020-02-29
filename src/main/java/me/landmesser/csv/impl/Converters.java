@@ -1,4 +1,4 @@
-package me.landmesser.csv;
+package me.landmesser.csv.impl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +25,9 @@ public class Converters {
 
   public <T> String convert(Class<T> type, T object) {
     if (converters.containsKey(type)) {
-      return ((Function<T, String>)converters.get(type)).apply(object);
+      @SuppressWarnings("unchecked")
+      Function<T, String> func = (Function<T, String>)converters.get(type);
+      return func.apply(object);
     } else {
       return checkSimpleTypes(object).orElseGet(object::toString);
     }

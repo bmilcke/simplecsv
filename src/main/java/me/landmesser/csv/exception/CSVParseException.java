@@ -1,4 +1,4 @@
-package me.landmesser.csv;
+package me.landmesser.csv.exception;
 
 public class CSVParseException extends Exception {
   public CSVParseException() {
