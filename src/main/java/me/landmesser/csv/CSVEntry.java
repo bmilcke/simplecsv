@@ -24,7 +24,7 @@ public class CSVEntry<T> {
   private final Class<T> type;
   private String fieldName;
   private Function<T, String> converter;
-  private CSVConverter<T> converterClass;
+  private ConverterParseFunction<T> parser;
 
   public String getName() {
     return name;
@@ -44,6 +44,10 @@ public class CSVEntry<T> {
 
   public Function<T, String> getConverter() {
     return converter;
+  }
+
+  public ConverterParseFunction<T> getParser() {
+    return parser;
   }
 
   private void determineName(Field field) {
@@ -67,7 +71,7 @@ public class CSVEntry<T> {
 
   @SuppressWarnings("unchecked")
   private void determineConverterclass(Field field) {
-    converterClass = Arrays.stream(field.getAnnotationsByType(CSVConvert.class))
+    CSVConverter<T> converterInstance = Arrays.stream(field.getAnnotationsByType(CSVConvert.class))
       .findFirst()
       .map(CSVConvert::value)
       .map(aClass -> {
@@ -78,8 +82,9 @@ public class CSVEntry<T> {
         }
       })
       .orElse(null);
-    if (converterClass != null) {
-      converter = converterClass::convert;
+    if (converterInstance != null) {
+      converter = converterInstance::convert;
+      parser = converterInstance::parse;
     }
   }
 }
