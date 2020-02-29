@@ -2,16 +2,23 @@ package me.landmesser.csv;
 
 import me.landmesser.csv.annotation.CSVIgnore;
 import me.landmesser.csv.exception.CSVParseException;
+import me.landmesser.csv.exception.CSVWriteException;
 import me.landmesser.csv.impl.CSVEntry;
 import me.landmesser.csv.impl.Converters;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class CSVWriter<T> {
@@ -19,6 +26,8 @@ public class CSVWriter<T> {
   private final Class<T> type;
   private final List<CSVEntry> entries;
   private Converters converters = new Converters();
+
+  private CSVFormat format = CSVFormat.DEFAULT;
 
   public CSVWriter(Class<T> type) {
     this.type = type;
@@ -28,18 +37,29 @@ public class CSVWriter<T> {
       .collect(Collectors.toList());
   }
 
-  private boolean isNotIgnored(Field field) {
-    return !Arrays.stream(field.getAnnotationsByType(CSVIgnore.class))
-      .findAny().isPresent();
+  public CSVWriter<T> withFormat(CSVFormat format) {
+    this.format = format;
+    return this;
   }
 
-  public String retrieveHeaders() {
+  public void write(Writer writer, Stream<T> objects) throws CSVWriteException {
+    try (CSVPrinter printer = new CSVPrinter(writer, format.withHeader(
+      retrieveHeaders().toArray(String[]::new)))) {
+      // TODO: optimize?
+      for (T o : objects.collect(Collectors.toList())) {
+        printer.printRecord(retrieveLine(o).toArray());
+      }
+    } catch (IOException e) {
+      throw new CSVWriteException("Error writing CSV file", e);
+    }
+  }
+
+  private Stream<String> retrieveHeaders() {
     return entries.stream()
-      .map(CSVEntry::getName)
-      .collect(Collectors.joining(";"));
+      .map(CSVEntry::getName);
   }
 
-  public String retrieveLine(T object) {
+  private Stream<String> retrieveLine(T object) {
     return entries.stream()
       .map(entry -> {
         try {
@@ -47,11 +67,15 @@ public class CSVWriter<T> {
         } catch (CSVParseException e) {
           return "";
         }
-      })
-      .collect(Collectors.joining(";"));
+      });
   }
 
-  public <R> String evaluate(T object, CSVEntry<R> entry) throws CSVParseException {
+  private boolean isNotIgnored(Field field) {
+    return !Arrays.stream(field.getAnnotationsByType(CSVIgnore.class))
+      .findAny().isPresent();
+  }
+
+  private <R> String evaluate(T object, CSVEntry<R> entry) throws CSVParseException {
     if (object != null) {
       try {
         Method method = type.getDeclaredMethod(determineGetter(entry));
