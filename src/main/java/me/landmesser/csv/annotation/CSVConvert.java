@@ -1,4 +1,6 @@
-package me.landmesser.csv;
+package me.landmesser.csv.annotation;
+
+import me.landmesser.csv.CSVConverter;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,5 +9,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CSVIgnore {
+public @interface CSVConvert {
+  @SuppressWarnings("rawtypes")
+  Class<? extends CSVConverter> value();
 }
