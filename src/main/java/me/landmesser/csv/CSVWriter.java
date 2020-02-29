@@ -2,6 +2,7 @@ package me.landmesser.csv;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -18,8 +19,14 @@ public class CSVWriter<T> {
   public CSVWriter(Class<T> type) {
     this.type = type;
     entries = Arrays.stream(type.getDeclaredFields())
+      .filter(this::isNotIgnored)
       .map(f -> new CSVEntry(f.getType(), f))
       .collect(Collectors.toList());
+  }
+
+  private boolean isNotIgnored(Field field) {
+    return !Arrays.stream(field.getAnnotationsByType(CSVIgnore.class))
+      .findAny().isPresent();
   }
 
   public String retrieveHeaders() {
@@ -51,7 +58,7 @@ public class CSVWriter<T> {
         }
         if (entryType.isInstance(result)) {
           return converters.convert(entryType, entryType.cast(result));
-        } else if(entryType.isPrimitive()) {
+        } else if (entryType.isPrimitive()) {
           return handlePrimitiveTypes(entryType, result);
         }
       } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
@@ -72,19 +79,19 @@ public class CSVWriter<T> {
   private String handlePrimitiveTypes(Class<?> primitiveType, Object boxedObject) {
     if (primitiveType.equals(boolean.class)) {
       return converters.convert(Boolean.class, (Boolean)boxedObject);
-    } else if(primitiveType.equals(char.class)) {
+    } else if (primitiveType.equals(char.class)) {
       return converters.convert(Character.class, (Character)boxedObject);
-    } else if(primitiveType.equals(byte.class)) {
+    } else if (primitiveType.equals(byte.class)) {
       return converters.convert(Byte.class, (Byte)boxedObject);
-    } else if(primitiveType.equals(short.class)) {
+    } else if (primitiveType.equals(short.class)) {
       return converters.convert(Short.class, (Short)boxedObject);
-    } else if(primitiveType.equals(int.class)) {
+    } else if (primitiveType.equals(int.class)) {
       return converters.convert(Integer.class, (Integer)boxedObject);
-    } else if(primitiveType.equals(long.class)) {
+    } else if (primitiveType.equals(long.class)) {
       return converters.convert(Long.class, (Long)boxedObject);
-    } else if(primitiveType.equals(float.class)) {
+    } else if (primitiveType.equals(float.class)) {
       return converters.convert(Float.class, (Float)boxedObject);
-    } else if(primitiveType.equals(double.class)) {
+    } else if (primitiveType.equals(double.class)) {
       return converters.convert(Double.class, (Double)boxedObject);
     }
     return converters.getNullValue();

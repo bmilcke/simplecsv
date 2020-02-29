@@ -10,6 +10,14 @@ public class Annotated {
   @CSVDateFormat("dd.MM.yyyy")
   private LocalDate begin;
 
+  private String unannotated;
+
+  @CSVIgnore
+  private String skip;
+
+  @CSVConvert(MyDOubleConverter.class)
+  private Double value;
+
   public String getName() {
     return name;
   }
@@ -24,5 +32,29 @@ public class Annotated {
 
   public void setBegin(LocalDate begin) {
     this.begin = begin;
+  }
+
+  public String getUnannotated() {
+    return unannotated;
+  }
+
+  public void setUnannotated(String unannotated) {
+    this.unannotated = unannotated;
+  }
+
+  public String getSkip() {
+    return skip;
+  }
+
+  public void setSkip(String skip) {
+    this.skip = skip;
+  }
+
+  public Double getValue() {
+    return value;
+  }
+
+  public void setValue(Double value) {
+    this.value = value;
   }
 }

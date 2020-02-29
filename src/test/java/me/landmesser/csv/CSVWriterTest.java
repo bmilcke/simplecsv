@@ -32,12 +32,13 @@ class CSVWriterTest {
   @Test
   void annotated() {
     CSVWriter<Annotated> writer = new CSVWriter<>(Annotated.class);
-    assertEquals("Custom;Begin", writer.retrieveHeaders());
+    assertEquals("Custom;Begin;Unannotated;Value", writer.retrieveHeaders());
 
     Annotated object = new Annotated();
     object.setName("Test");
     object.setBegin(LocalDate.of(2019, 3, 25));
+    object.setValue(42.1234d);
 
-    assertEquals("Test;25.03.2019", writer.retrieveLine(object));
+    assertEquals("Test;25.03.2019;;42,12", writer.retrieveLine(object));
   }
 }

@@ -3,6 +3,7 @@ package me.landmesser.csv;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -16,12 +17,14 @@ public class CSVEntry<T> {
     this.fieldName = Objects.requireNonNull(field).getName();
     determineConverter(field);
     determineName(field);
+    determineConverterclass(field);
   }
 
   private String name;
   private final Class<T> type;
   private String fieldName;
   private Function<T, String> converter;
+  private CSVConverter<T> converterClass;
 
   public String getName() {
     return name;
@@ -60,5 +63,23 @@ public class CSVEntry<T> {
         }
         return null;
       }).orElse(null);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void determineConverterclass(Field field) {
+    converterClass = Arrays.stream(field.getAnnotationsByType(CSVConvert.class))
+      .findFirst()
+      .map(CSVConvert::value)
+      .map(aClass -> {
+        try {
+          return aClass.getDeclaredConstructor().newInstance();
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+          return null;
+        }
+      })
+      .orElse(null);
+    if (converterClass != null) {
+      converter = converterClass::convert;
+    }
   }
 }
