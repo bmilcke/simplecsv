@@ -18,6 +18,8 @@ public class Unannotated {
 
   private Integer memberSinceYear;
 
+  private TestEnum testEnum;
+
   // getter and setter
 
   public String getFirstname() {
@@ -74,5 +76,13 @@ public class Unannotated {
 
   public void setMemberSinceYear(Integer memberSinceYear) {
     this.memberSinceYear = memberSinceYear;
+  }
+
+  public TestEnum getTestEnum() {
+    return testEnum;
+  }
+
+  public void setTestEnum(TestEnum testEnum) {
+    this.testEnum = testEnum;
   }
 }

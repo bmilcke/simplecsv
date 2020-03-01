@@ -1,6 +1,6 @@
 package me.landmesser.csv.exception;
 
-public class CSVWriteException extends Exception{
+public class CSVWriteException extends CSVException {
   public CSVWriteException() {
     super();
   }

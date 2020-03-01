@@ -7,6 +7,7 @@ import me.landmesser.csv.annotation.CSVIgnore;
 
 import java.time.LocalDate;
 
+@CSVConvert(value = GermanBooleanConverter.class, forType = Boolean.class)
 public class Annotated {
 
   @CSVColumnName("Custom")
@@ -22,6 +23,9 @@ public class Annotated {
 
   @CSVConvert(MyDOubleConverter.class)
   private Double value;
+
+  // Converter set at class level should be used
+  private boolean checked;
 
   public String getName() {
     return name;
@@ -61,5 +65,13 @@ public class Annotated {
 
   public void setValue(Double value) {
     this.value = value;
+  }
+
+  public boolean isChecked() {
+    return checked;
+  }
+
+  public void setChecked(boolean checked) {
+    this.checked = checked;
   }
 }

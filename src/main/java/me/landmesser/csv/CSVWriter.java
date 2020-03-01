@@ -1,22 +1,24 @@
 package me.landmesser.csv;
 
+import me.landmesser.csv.annotation.CSVConvert;
 import me.landmesser.csv.annotation.CSVIgnore;
+import me.landmesser.csv.exception.CSVException;
 import me.landmesser.csv.exception.CSVParseException;
 import me.landmesser.csv.exception.CSVWriteException;
 import me.landmesser.csv.impl.CSVEntry;
-import me.landmesser.csv.impl.Converters;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,12 +32,13 @@ public class CSVWriter<T> {
 
   private CSVFormat format = CSVFormat.DEFAULT;
 
-  public CSVWriter(Class<T> type) {
+  public CSVWriter(Class<T> type) throws CSVException {
     this.type = type;
     entries = Arrays.stream(type.getDeclaredFields())
       .filter(this::isNotIgnored)
       .map(f -> new CSVEntry(f.getType(), f))
       .collect(Collectors.toList());
+    parseClass(type);
   }
 
   public CSVWriter<T> withFormat(CSVFormat format) {
@@ -90,12 +93,14 @@ public class CSVWriter<T> {
         if (entry.getConverter() != null) {
           return entry.getConverter().apply(entryType.cast(result));
         }
-        if (entryType.isInstance(result)) {
-          return converters.convert(entryType, entryType.cast(result));
-        } else if (entryType.isPrimitive()) {
+        if (entryType.isPrimitive()) {
           return handlePrimitiveTypes(entryType, result);
+        } else if (entryType.isInstance(result)) {
+          return converters.convert(entryType, entryType.cast(result));
         }
-      } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+      } catch (NoSuchMethodException e) {
+        Logger.getLogger(getClass().getSimpleName()).warning(("No getter found for " + entry.getFieldName()));
+      } catch (IllegalAccessException | InvocationTargetException e) {
         throw new CSVParseException("Could not invoke getter for field " + entry.getFieldName(), e);
       }
     }
@@ -129,5 +134,21 @@ public class CSVWriter<T> {
       return converters.convert(Double.class, (Double)boxedObject);
     }
     return null;
+  }
+
+  private void parseClass(Class<T> type) throws CSVException {
+    Optional<CSVConvert> anno = Arrays.stream(type.getAnnotationsByType(CSVConvert.class))
+      .findFirst();
+    if (anno.isPresent()) {
+      try {
+        if (anno.get().forType() == Void.class) {
+          throw new CSVException("Class level annotation requires forType to be set");
+        }
+        converters.setUntypedConverter(anno.get().forType(),
+          anno.get().value().getDeclaredConstructor().newInstance());
+      } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        throw new CSVException("Error setting converter", e);
+      }
+    }
   }
 }
