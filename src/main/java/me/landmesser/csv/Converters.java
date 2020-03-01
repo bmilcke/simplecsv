@@ -54,6 +54,12 @@ class Converters {
   }
 
   public <T> T parse(Class<?> type, String value) throws CSVConversionException {
+    if (value != null && value.equals("")) {
+      return null;
+    }
+    if (type.isInstance(value)) {
+      return (T)type.cast(value);
+    }
     return null;
   }
 

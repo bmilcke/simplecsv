@@ -10,9 +10,12 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class CSVReader<T> extends ClassParser<T> {
@@ -28,39 +31,54 @@ public class CSVReader<T> extends ClassParser<T> {
 
   public Stream<T> read(Reader reader) throws CSVParseException {
     try (CSVParser parser = new CSVParser(reader, getFormat())) {
-      for (final CSVRecord record : parser) {
-        final T result = getType().getConstructor().newInstance();
-        Iterator<String> iterator = record.iterator();
-        getEntries().forEach(entry -> {
-//          try {
-            if (iterator.hasNext()) {
-
-//              evaluate(iterator.next(), entry);
-            }
-//          } catch (CSVParseException e) {
-//            e.printStackTrace();
-//          }
-        });
+      // TODO: why does this not work?
+//      return StreamSupport.stream(parser.spliterator(), false)
+//        .map(this::readSingle);
+      List<T> result = new ArrayList<>();
+      for(CSVRecord rec : parser) {
+        result.add(readSingle(rec));
       }
+      return result.stream();
     } catch (IOException e) {
-      throw new CSVParseException("Error reading CSV file", e);
+      throw new CSVParseException("Error reading input", e);
+    }
+  }
+
+  private T readSingle(CSVRecord record) throws CSVParseException {
+    try {
+      final T result = getType().getConstructor().newInstance();
+      Iterator<String> iterator = record.iterator();
+      getEntries().forEach(entry -> {
+        try {
+          if (iterator.hasNext()) {
+            evaluate(result, iterator.next(), entry);
+          }
+        } catch (CSVParseException e) {
+          e.printStackTrace();
+        }
+      });
+      return result;
     } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
       throw new CSVParseException("Could not instantiate class " + getType(), e);
     } catch (NoSuchMethodException e) {
       throw new CSVParseException("Class " + getType() + " has no default constructor", e);
     }
-    return null;
   }
 
-  private <R> void evaluate(T targetObject, R value, CSVEntry<R> entry) throws CSVParseException {
+  private <R> void evaluate(T targetObject, String value, CSVEntry<R> entry) throws CSVParseException {
     try {
-//      Class<R> entryType = entry.getType();
-//      if (entry.getConverter() != null) {
-//        return entry.getConverter().apply(entryType.cast(result));
-//      }
-//      return convert(entryType, result);
-      Method method = getType().getDeclaredMethod(determineSetter(entry), entry.getType());
-      method.invoke(targetObject, value);
+      R converted = null;
+      Class<R> entryType = entry.getType();
+      if (entry.getConverter() != null) {
+        converted = entry.getConverter().parse(value);
+      } else {
+        converted = parse(entryType, value);
+      }
+      // TODO: workaround
+      if (converted != null) {
+        Method method = getType().getDeclaredMethod(determineSetter(entry), entry.getType());
+        method.invoke(targetObject, converted);
+      }
     } catch (NoSuchMethodException e) {
       Logger.getLogger(getClass().getSimpleName()).warning(("No setter found for " + entry.getFieldName()));
     } catch (IllegalAccessException | InvocationTargetException e) {

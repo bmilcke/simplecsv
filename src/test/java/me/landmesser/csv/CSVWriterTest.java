@@ -25,8 +25,8 @@ class CSVWriterTest {
 
   @Test
   void unannotated() throws CSVException {
-    CSVWriter<Unannotated> writer = new CSVWriter<>(Unannotated.class).withFormat(
-      CSVFormat.RFC4180.withDelimiter(';'));
+    CSVWriter<Unannotated> writer = new CSVWriter<>(Unannotated.class)
+      .withFormat(CSVFormat.RFC4180.withDelimiter(';'));
 
     Unannotated object = new Unannotated();
     object.setAge(42);

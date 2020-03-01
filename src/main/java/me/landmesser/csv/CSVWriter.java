@@ -52,13 +52,7 @@ public class CSVWriter<T> extends ClassParser<T> {
 
   private Stream<String> retrieveLine(T object) {
     return getEntries().stream()
-      .map(entry -> {
-        try {
-          return evaluate(object, entry);
-        } catch (CSVParseException e) {
-          return null;
-        }
-      });
+      .map(entry -> evaluate(object, entry));
   }
 
   private <R> String evaluate(T object, CSVEntry<R> entry) throws CSVParseException {
