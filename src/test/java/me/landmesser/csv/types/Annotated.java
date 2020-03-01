@@ -1,4 +1,4 @@
-package me.landmesser.csv;
+package me.landmesser.csv.types;
 
 import me.landmesser.csv.annotation.CSVColumnName;
 import me.landmesser.csv.annotation.CSVConvert;

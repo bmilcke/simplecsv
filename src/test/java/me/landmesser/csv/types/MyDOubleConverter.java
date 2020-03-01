@@ -1,5 +1,6 @@
-package me.landmesser.csv;
+package me.landmesser.csv.types;
 
+import me.landmesser.csv.CSVConverter;
 import me.landmesser.csv.exception.CSVConversionException;
 import org.junit.platform.commons.util.StringUtils;
 

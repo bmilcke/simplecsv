@@ -1,4 +1,4 @@
-package me.landmesser.csv;
+package me.landmesser.csv.types;
 
 public enum TestEnum {
   FIRST,

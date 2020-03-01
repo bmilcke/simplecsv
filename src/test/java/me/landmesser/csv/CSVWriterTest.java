@@ -1,7 +1,10 @@
 package me.landmesser.csv;
 
 import me.landmesser.csv.exception.CSVException;
-import me.landmesser.csv.exception.CSVWriteException;
+import me.landmesser.csv.types.Annotated;
+import me.landmesser.csv.types.TestEnum;
+import me.landmesser.csv.types.Types;
+import me.landmesser.csv.types.Unannotated;
 import org.apache.commons.csv.CSVFormat;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class CSVWriterTest {
 
   @Test
-  void unannotated() throws IOException, CSVException {
+  void unannotated() throws CSVException {
     CSVWriter<Unannotated> writer = new CSVWriter<>(Unannotated.class).withFormat(
       CSVFormat.RFC4180.withDelimiter(';'));
 
@@ -26,11 +29,10 @@ class CSVWriterTest {
     object.setSurname("Smith");
     object.setDateOfBirth(LocalDate.of(1980, 4, 2));
 
-    String result = retrieveCSVString(writer, object);
-    List<String> resultLines = Arrays.asList(result.split("\\r?\\n"));
-    assertEquals(2, resultLines.size());
-    assertEquals("Firstname;Surname;Age;DateOfBirth;Member;WantsEmail;MemberSinceYear;TestEnum", resultLines.get(0));
-    assertEquals(";Smith;42;1980-04-02;false;;;", resultLines.get(1));
+    List<String> result = retrieveCSVString(writer, object);
+    assertEquals(2, result.size());
+    assertEquals("Firstname;Surname;Age;DateOfBirth;Member;WantsEmail;MemberSinceYear;TestEnum", result.get(0));
+    assertEquals(";Smith;42;1980-04-02;false;;;", result.get(1));
 
     object.setWantsEmail(true);
     object.setMember(true);
@@ -38,13 +40,12 @@ class CSVWriterTest {
     object.setTestEnum(TestEnum.SECOND);
 
     result = retrieveCSVString(writer, object);
-    resultLines = Arrays.asList(result.split("\\r?\\n"));
-    assertEquals(2, resultLines.size());
-    assertEquals(";Smith;42;1980-04-02;true;true;2010;SECOND", resultLines.get(1));
+    assertEquals(2, result.size());
+    assertEquals(";Smith;42;1980-04-02;true;true;2010;SECOND", result.get(1));
   }
 
   @Test
-  void annotated() throws IOException, CSVException {
+  void annotated() throws CSVException {
     CSVWriter<Annotated> writer = new CSVWriter<>(Annotated.class).withFormat(
       CSVFormat.EXCEL.withDelimiter(';'));
 
@@ -53,17 +54,68 @@ class CSVWriterTest {
     object.setBegin(LocalDate.of(2019, 3, 25));
     object.setValue(42.1234d);
 
-    String result = retrieveCSVString(writer, object);
-    List<String> resultLines = Arrays.asList(result.split("\\r?\\n"));
-    assertEquals(2, resultLines.size());
-    assertEquals("Custom;Begin;Unannotated;Value;Checked", resultLines.get(0));
-    assertEquals("Test;25.03.2019;;42,12;falsch", resultLines.get(1));
+    List<String> result = retrieveCSVString(writer, object);
+    assertEquals(2, result.size());
+    assertEquals("Custom;Begin;Unannotated;Value;Checked", result.get(0));
+    assertEquals("Test;25.03.2019;;42,12;falsch", result.get(1));
   }
 
-  private <T> String retrieveCSVString(CSVWriter<T> writer, T object) throws IOException, CSVWriteException {
+  @Test
+  void testNullValues() throws CSVException {
+    CSVWriter<Types> writer = new CSVWriter<>(Types.class);
+
+    Types object = new Types();
+
+    List<String> result = retrieveCSVString(writer, object);
+    assertEquals(2, result.size());
+    assertEquals("String,PrimInt,PrimChar,PrimBoolean,Integer,Character,BoleanVal", result.get(0));
+    assertEquals(String.format(",0,\"%c\",false,,,", 0), result.get(1));
+
+    object.setString("");
+    object.setPrimInt(2);
+    object.setPrimChar('ö');
+    object.setPrimBoolean(true);
+    object.setInteger(5);
+    object.setCharacter('#');
+    object.setBooleanVal(false);
+
+    result = retrieveCSVString(writer, object);
+    assertEquals(2, result.size());
+    assertEquals("String,PrimInt,PrimChar,PrimBoolean,Integer,Character,BoleanVal", result.get(0));
+    assertEquals("\"\",2,ö,true,5,\"#\",false", result.get(1));
+  }
+
+  @Test
+  void testQuoting() throws CSVException {
+    CSVWriter<Types> writer = new CSVWriter<>(Types.class);
+
+    Types object = new Types();
+    object.setPrimChar('x');
+    object.setString("A string with spaces");
+
+    List<String> result = retrieveCSVString(writer, object);
+    assertEquals(2, result.size());
+    assertEquals("A string with spaces,0,x,false,,,", result.get(1));
+
+    object.setString("A string with spaces, and also commas");
+
+    result = retrieveCSVString(writer, object);
+    assertEquals(2, result.size());
+    assertEquals("\"A string with spaces, and also commas\",0,x,false,,,", result.get(1));
+
+    object.setString("This one with \"");
+
+    result = retrieveCSVString(writer, object);
+    assertEquals(2, result.size());
+    assertEquals("\"This one with \"\"\",0,x,false,,,", result.get(1));
+  }
+
+  private <T> List<String> retrieveCSVString(CSVWriter<T> writer, T object) throws CSVException {
     try (StringWriter sw = new StringWriter()) {
       writer.write(sw, Stream.of(object));
-      return sw.toString();
+      return Arrays.asList(sw.toString().split("\\r?\\n"));
+    } catch (IOException ex) {
+      throw new CSVException("Wrapped IOException", ex);
     }
   }
 }
