@@ -2,6 +2,7 @@ package me.landmesser.csv;
 
 import me.landmesser.csv.exception.CSVException;
 import me.landmesser.csv.types.Annotated;
+import me.landmesser.csv.types.AnnotatedWithError;
 import me.landmesser.csv.types.TestEnum;
 import me.landmesser.csv.types.Types;
 import me.landmesser.csv.types.Unannotated;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CSVWriterTest {
 
@@ -108,6 +110,11 @@ class CSVWriterTest {
     result = retrieveCSVString(writer, object);
     assertEquals(2, result.size());
     assertEquals("\"This one with \"\"\",0,x,false,,,", result.get(1));
+  }
+
+  @Test
+  void classAnnotationError() {
+    assertThrows(CSVException.class, () -> new CSVWriter<>(AnnotatedWithError.class));
   }
 
   private <T> List<String> retrieveCSVString(CSVWriter<T> writer, T object) throws CSVException {
