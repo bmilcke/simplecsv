@@ -3,7 +3,7 @@ package me.landmesser.csv.impl;
 import me.landmesser.csv.CSVConverter;
 import me.landmesser.csv.ConverterParseFunction;
 import me.landmesser.csv.annotation.CSVColumnName;
-import me.landmesser.csv.annotation.CSVConvert;
+import me.landmesser.csv.annotation.CSVUseConverter;
 import me.landmesser.csv.annotation.CSVDateFormat;
 import org.apache.commons.lang3.StringUtils;
 
@@ -76,9 +76,9 @@ public class CSVEntry<T> {
 
   @SuppressWarnings("unchecked")
   private void determineConverterclass(Field field) {
-    CSVConverter<T> converterInstance = Arrays.stream(field.getAnnotationsByType(CSVConvert.class))
+    CSVConverter<T> converterInstance = Arrays.stream(field.getAnnotationsByType(CSVUseConverter.class))
       .findFirst()
-      .map(CSVConvert::value)
+      .map(CSVUseConverter::value)
       .map(aClass -> {
         try {
           return aClass.getDeclaredConstructor().newInstance();

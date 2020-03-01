@@ -1,13 +1,18 @@
 package me.landmesser.csv.types;
 
 import me.landmesser.csv.annotation.CSVColumnName;
-import me.landmesser.csv.annotation.CSVConvert;
+import me.landmesser.csv.annotation.CSVUseConverter;
+import me.landmesser.csv.annotation.CSVUseConverters;
 import me.landmesser.csv.annotation.CSVDateFormat;
 import me.landmesser.csv.annotation.CSVIgnore;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-@CSVConvert(value = GermanBooleanConverter.class, forType = Boolean.class)
+@CSVUseConverters({
+  @CSVUseConverter(value = GermanBooleanConverter.class, forType = Boolean.class),
+  @CSVUseConverter(value = MyLocalDateTimeConverter.class, forType = LocalDateTime.class)
+})
 public class Annotated {
 
   @CSVColumnName("Custom")
@@ -16,12 +21,14 @@ public class Annotated {
   @CSVDateFormat("dd.MM.yyyy")
   private LocalDate begin;
 
+  private LocalDateTime end;
+
   private String unannotated;
 
   @CSVIgnore
   private String skip;
 
-  @CSVConvert(MyDOubleConverter.class)
+  @CSVUseConverter(MyDOubleConverter.class)
   private Double value;
 
   // Converter set at class level should be used
@@ -41,6 +48,14 @@ public class Annotated {
 
   public void setBegin(LocalDate begin) {
     this.begin = begin;
+  }
+
+  public LocalDateTime getEnd() {
+    return end;
+  }
+
+  public void setEnd(LocalDateTime end) {
+    this.end = end;
   }
 
   public String getUnannotated() {

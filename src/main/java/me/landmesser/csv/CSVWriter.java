@@ -1,6 +1,6 @@
 package me.landmesser.csv;
 
-import me.landmesser.csv.annotation.CSVConvert;
+import me.landmesser.csv.annotation.CSVUseConverter;
 import me.landmesser.csv.annotation.CSVIgnore;
 import me.landmesser.csv.exception.CSVException;
 import me.landmesser.csv.exception.CSVParseException;
@@ -17,7 +17,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -137,15 +136,15 @@ public class CSVWriter<T> {
   }
 
   private void parseClass(Class<T> type) throws CSVException {
-    Optional<CSVConvert> anno = Arrays.stream(type.getAnnotationsByType(CSVConvert.class))
-      .findFirst();
-    if (anno.isPresent()) {
+    List<CSVUseConverter> annotations = Arrays.stream(type.getAnnotationsByType(CSVUseConverter.class))
+      .collect(Collectors.toList());
+    for (CSVUseConverter anno : annotations) {
       try {
-        if (anno.get().forType() == Void.class) {
+        if (anno.forType() == Void.class) {
           throw new CSVException("Class level annotation requires forType to be set");
         }
-        converters.setUntypedConverter(anno.get().forType(),
-          anno.get().value().getDeclaredConstructor().newInstance());
+        converters.setUntypedConverter(anno.forType(),
+          anno.value().getDeclaredConstructor().newInstance());
       } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
         throw new CSVException("Error setting converter", e);
       }

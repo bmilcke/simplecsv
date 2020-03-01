@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -55,11 +57,14 @@ class CSVWriterTest {
     object.setName("Test");
     object.setBegin(LocalDate.of(2019, 3, 25));
     object.setValue(42.1234d);
+    object.setEnd(LocalDateTime.of(
+      LocalDate.of(2020, 3, 25),
+      LocalTime.of(17, 23, 3, 15)));
 
     List<String> result = retrieveCSVString(writer, object);
     assertEquals(2, result.size());
-    assertEquals("Custom;Begin;Unannotated;Value;Checked", result.get(0));
-    assertEquals("Test;25.03.2019;;42,12;falsch", result.get(1));
+    assertEquals("Custom;Begin;End;Unannotated;Value;Checked", result.get(0));
+    assertEquals("Test;25.03.2019;Mittwoch, 25. März 2020;;42,12;falsch", result.get(1));
   }
 
   @Test

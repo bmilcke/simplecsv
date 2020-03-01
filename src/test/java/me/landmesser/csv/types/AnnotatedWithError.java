@@ -1,8 +1,8 @@
 package me.landmesser.csv.types;
 
-import me.landmesser.csv.annotation.CSVConvert;
+import me.landmesser.csv.annotation.CSVUseConverter;
 
-@CSVConvert(GermanBooleanConverter.class)
+@CSVUseConverter(GermanBooleanConverter.class)
 public class AnnotatedWithError {
 
   private boolean field;
