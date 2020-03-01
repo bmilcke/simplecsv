@@ -1,15 +1,11 @@
 package me.landmesser.csv;
 
-import me.landmesser.csv.CSVConverter;
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
 
 public class Converters {
 
-  private Map<Class<?>, CSVConverter<?>> converters = new HashMap<>();
+  private final Map<Class<?>, CSVConverter<?>> converters = new HashMap<>();
 
   public <T> void setConverter(Class<T> type, CSVConverter<T> converter) {
     converters.put(type, converter);

@@ -27,7 +27,7 @@ public class CSVWriter<T> {
 
   private final Class<T> type;
   private final List<CSVEntry> entries;
-  private Converters converters = new Converters();
+  private final Converters converters = new Converters();
   private boolean includeHeaders = true;
 
   private CSVFormat format = CSVFormat.DEFAULT;

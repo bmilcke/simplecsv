@@ -27,7 +27,7 @@ public class CSVEntry<T> {
 
   private String name;
   private final Class<T> type;
-  private String fieldName;
+  private final String fieldName;
   private Function<T, String> converter;
   private ConverterParseFunction<T> parser;
 
