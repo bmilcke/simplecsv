@@ -8,7 +8,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
 
-public class MyDOubleConverter implements CSVConverter<Double> {
+public class MyDoubleConverter implements CSVConverter<Double> {
 
   @Override
   public String convert(Double value) {

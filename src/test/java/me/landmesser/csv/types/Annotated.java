@@ -28,7 +28,7 @@ public class Annotated {
   @CSVIgnore
   private String skip;
 
-  @CSVUseConverter(MyDOubleConverter.class)
+  @CSVUseConverter(MyDoubleConverter.class)
   private Double value;
 
   // Converter set at class level should be used

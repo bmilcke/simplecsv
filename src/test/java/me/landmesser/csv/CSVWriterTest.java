@@ -49,6 +49,17 @@ class CSVWriterTest {
   }
 
   @Test
+  void withoutHeaders() throws CSVException {
+    CSVWriter<Unannotated> writer = new CSVWriter<>(Unannotated.class).withoutHeaders();
+
+    Unannotated object = new Unannotated();
+
+    List<String> result = retrieveCSVString(writer, object);
+    assertEquals(1, result.size());
+    assertEquals(",,0,,false,,,", result.get(0));
+  }
+
+  @Test
   void annotated() throws CSVException {
     CSVWriter<Annotated> writer = new CSVWriter<>(Annotated.class).withFormat(
       CSVFormat.EXCEL.withDelimiter(','));

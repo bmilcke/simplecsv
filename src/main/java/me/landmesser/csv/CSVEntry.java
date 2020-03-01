@@ -1,19 +1,14 @@
-package me.landmesser.csv.impl;
+package me.landmesser.csv;
 
-import me.landmesser.csv.CSVConverter;
-import me.landmesser.csv.ConverterParseFunction;
 import me.landmesser.csv.annotation.CSVColumnName;
-import me.landmesser.csv.annotation.CSVUseConverter;
 import me.landmesser.csv.annotation.CSVDateFormat;
+import me.landmesser.csv.annotation.CSVUseConverter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.Function;
 
 public class CSVEntry<T> {
 
@@ -28,8 +23,7 @@ public class CSVEntry<T> {
   private String name;
   private final Class<T> type;
   private final String fieldName;
-  private Function<T, String> converter;
-  private ConverterParseFunction<T> parser;
+  private CSVConverter<T> converter;
 
   public String getName() {
     return name;
@@ -47,12 +41,8 @@ public class CSVEntry<T> {
     return fieldName;
   }
 
-  public Function<T, String> getConverter() {
+  public CSVConverter<T> getConverter() {
     return converter;
-  }
-
-  public ConverterParseFunction<T> getParser() {
-    return parser;
   }
 
   private void determineName(Field field) {
@@ -62,21 +52,19 @@ public class CSVEntry<T> {
       .orElse(StringUtils.capitalize(field.getName()));
   }
 
+  @SuppressWarnings("unchecked, rawtypes")
   private void determineConverter(Field field) {
     converter = Arrays.stream(field.getAnnotationsByType(CSVDateFormat.class))
       .findFirst()
       .map(CSVDateFormat::value)
       .map(fmt -> {
-        if (field.getType().isAssignableFrom(LocalDate.class)) {
-          return (Function<T, String>)ld -> ((LocalDate)ld).format(DateTimeFormatter.ofPattern(fmt));
-        }
-        return null;
+        return new CSVDateConverter(field.getType(), fmt);
       }).orElse(null);
   }
 
   @SuppressWarnings("unchecked")
   private void determineConverterclass(Field field) {
-    CSVConverter<T> converterInstance = Arrays.stream(field.getAnnotationsByType(CSVUseConverter.class))
+    Arrays.stream(field.getAnnotationsByType(CSVUseConverter.class))
       .findFirst()
       .map(CSVUseConverter::value)
       .map(aClass -> {
@@ -85,11 +73,6 @@ public class CSVEntry<T> {
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
           return null;
         }
-      })
-      .orElse(null);
-    if (converterInstance != null) {
-      converter = converterInstance::convert;
-      parser = converterInstance::parse;
-    }
+      }).ifPresent(inst -> converter = inst);
   }
 }
