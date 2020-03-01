@@ -51,7 +51,7 @@ class CSVWriterTest {
   @Test
   void annotated() throws CSVException {
     CSVWriter<Annotated> writer = new CSVWriter<>(Annotated.class).withFormat(
-      CSVFormat.EXCEL.withDelimiter(';'));
+      CSVFormat.EXCEL.withDelimiter(','));
 
     Annotated object = new Annotated();
     object.setName("Test");
@@ -63,8 +63,8 @@ class CSVWriterTest {
 
     List<String> result = retrieveCSVString(writer, object);
     assertEquals(2, result.size());
-    assertEquals("Custom;Begin;End;Unannotated;Value;Checked", result.get(0));
-    assertEquals("Test;25.03.2019;Mittwoch, 25. März 2020;;42,12;falsch", result.get(1));
+    assertEquals("Custom,Begin,End,Unannotated,Value,Checked", result.get(0));
+    assertEquals("Test,25.03.2019,\"Mittwoch, 25. März 2020\",,\"42,12\",falsch", result.get(1));
   }
 
   @Test
