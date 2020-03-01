@@ -9,17 +9,16 @@ import java.io.StringWriter;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CSVWriterTest {
 
   @Test
   void unannotated() throws IOException, CSVWriteException {
     CSVWriter<Unannotated> writer = new CSVWriter<>(Unannotated.class).withFormat(
-      CSVFormat.EXCEL.withDelimiter(';'));
+      CSVFormat.RFC4180.withDelimiter(';'));
 
     Unannotated object = new Unannotated();
     object.setAge(42);
@@ -30,7 +29,7 @@ class CSVWriterTest {
     List<String> resultLines = Arrays.asList(result.split("\\r?\\n"));
     assertEquals(2, resultLines.size());
     assertEquals("Firstname;Surname;Age;DateOfBirth;Member;WantsEmail;MemberSinceYear", resultLines.get(0));
-    assertEquals("\"\";Smith;42;1980-04-02;false;;", resultLines.get(1));
+    assertEquals(";Smith;42;1980-04-02;false;;", resultLines.get(1));
 
     object.setWantsEmail(true);
     object.setMember(true);
@@ -39,7 +38,7 @@ class CSVWriterTest {
     result = retrieveCSVString(writer, object);
     resultLines = Arrays.asList(result.split("\\r?\\n"));
     assertEquals(2, resultLines.size());
-    assertEquals("\"\";Smith;42;1980-04-02;true;true;2010", resultLines.get(1));
+    assertEquals(";Smith;42;1980-04-02;true;true;2010", resultLines.get(1));
   }
 
   @Test

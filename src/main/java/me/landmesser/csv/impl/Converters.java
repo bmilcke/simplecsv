@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class Converters {
 
@@ -13,14 +12,9 @@ public class Converters {
   }
 
   private Map<Class<?>, Function<?, String>> converters = new HashMap<>();
-  private Supplier<String> nullSupplier = () -> "";
 
   public <T> void setConverter(Class<T> type, Function<T, String> converter) {
     converters.put(type, converter);
-  }
-
-  public void setNullSupplier(Supplier<String> nullSupplier) {
-    this.nullSupplier = nullSupplier;
   }
 
   public <T> String convert(Class<T> type, T object) {
@@ -31,10 +25,6 @@ public class Converters {
     } else {
       return checkSimpleTypes(object).orElseGet(object::toString);
     }
-  }
-
-  public String getNullValue() {
-    return nullSupplier.get();
   }
 
   private void init() {

@@ -26,6 +26,7 @@ public class CSVWriter<T> {
   private final Class<T> type;
   private final List<CSVEntry> entries;
   private Converters converters = new Converters();
+  private boolean includeHeaders = true;
 
   private CSVFormat format = CSVFormat.DEFAULT;
 
@@ -42,9 +43,14 @@ public class CSVWriter<T> {
     return this;
   }
 
+  public CSVWriter<T> withoutHeaders() {
+    includeHeaders = false;
+    return this;
+  }
+
   public void write(Writer writer, Stream<T> objects) throws CSVWriteException {
-    try (CSVPrinter printer = new CSVPrinter(writer, format.withHeader(
-      retrieveHeaders().toArray(String[]::new)))) {
+    try (CSVPrinter printer = new CSVPrinter(writer,
+      includeHeaders ? format.withHeader(retrieveHeaders().toArray(String[]::new)) : format)) {
       // TODO: optimize?
       for (T o : objects.collect(Collectors.toList())) {
         printer.printRecord(retrieveLine(o).toArray());
@@ -93,7 +99,7 @@ public class CSVWriter<T> {
         throw new CSVParseException("Could not invoke getter for field " + entry.getFieldName(), e);
       }
     }
-    return converters.getNullValue();
+    return null;
   }
 
   private String determineGetter(CSVEntry entry) {
@@ -122,6 +128,6 @@ public class CSVWriter<T> {
     } else if (primitiveType.equals(double.class)) {
       return converters.convert(Double.class, (Double)boxedObject);
     }
-    return converters.getNullValue();
+    return null;
   }
 }
