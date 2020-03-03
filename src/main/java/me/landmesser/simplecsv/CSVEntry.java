@@ -1,13 +1,11 @@
 package me.landmesser.simplecsv;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class CSVEntry<T> {
+class CSVEntry<T> {
 
   public CSVEntry(Class<T> type, Field field) {
     this.type = Objects.requireNonNull(type);

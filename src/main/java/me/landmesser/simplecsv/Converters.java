@@ -1,8 +1,5 @@
 package me.landmesser.simplecsv;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,16 +9,16 @@ class Converters {
 
   private static final Map<Class<?>, Class<?>> PRIMITIVE_WRAPPERS =
     Stream.of(
-      new ImmutablePair<>(boolean.class, Boolean.class),
-      new ImmutablePair<>(byte.class, Byte.class),
-      new ImmutablePair<>(char.class, Character.class),
-      new ImmutablePair<>(double.class, Double.class),
-      new ImmutablePair<>(float.class, Float.class),
-      new ImmutablePair<>(int.class, Integer.class),
-      new ImmutablePair<>(long.class, Long.class),
-      new ImmutablePair<>(short.class, Short.class),
-      new ImmutablePair<>(void.class, Void.class)
-    ).collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
+      Pair.of(boolean.class, Boolean.class),
+      Pair.of(byte.class, Byte.class),
+      Pair.of(char.class, Character.class),
+      Pair.of(double.class, Double.class),
+      Pair.of(float.class, Float.class),
+      Pair.of(int.class, Integer.class),
+      Pair.of(long.class, Long.class),
+      Pair.of(short.class, Short.class),
+      Pair.of(void.class, Void.class)
+    ).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 
   private final Map<Class<?>, CSVConverter<?>> converters = new HashMap<>();
 

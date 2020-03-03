@@ -7,7 +7,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
 import java.util.logging.Logger;
 
-public class CSVDateConverter<T extends TemporalAccessor> implements CSVConverter<TemporalAccessor> {
+class CSVDateConverter<T extends TemporalAccessor> implements CSVConverter<TemporalAccessor> {
 
   private final Class<T> type;
   private final DateTimeFormatter formatter;
