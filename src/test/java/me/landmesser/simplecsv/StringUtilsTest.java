@@ -11,6 +11,9 @@ class StringUtilsTest {
   @ParameterizedTest
   @CsvSource({
     ",",
+    "'',''",
+    "' ',' '",
+    "###,###",
     "\"\",\"\"",
     "a,A",
     "ab,Ab",
