@@ -1,6 +1,6 @@
-package simplecsv;
+package me.landmesser.simplecsv;
 
-import simplecsv.types.Unannotated;
+import me.landmesser.simplecsv.types.Unannotated;
 import org.apache.commons.csv.CSVFormat;
 import org.junit.jupiter.api.Test;
 

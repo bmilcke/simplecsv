@@ -1,11 +1,10 @@
-package simplecsv;
+package me.landmesser.simplecsv;
 
-import me.landmesser.simplecsv.CSVException;
-import simplecsv.types.Annotated;
-import simplecsv.types.AnnotatedWithError;
-import simplecsv.types.TestEnum;
-import simplecsv.types.Types;
-import simplecsv.types.Unannotated;
+import me.landmesser.simplecsv.types.Annotated;
+import me.landmesser.simplecsv.types.AnnotatedWithError;
+import me.landmesser.simplecsv.types.TestEnum;
+import me.landmesser.simplecsv.types.Types;
+import me.landmesser.simplecsv.types.Unannotated;
 import org.apache.commons.csv.CSVFormat;
 import org.junit.jupiter.api.Test;
 

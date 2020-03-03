@@ -1,7 +1,4 @@
-package simplecsv;
-
-import me.landmesser.simplecsv.CSVConversionException;
-import me.landmesser.simplecsv.CSVConverter;
+package me.landmesser.simplecsv;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

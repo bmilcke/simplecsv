@@ -1,4 +1,4 @@
-package simplecsv.types;
+package me.landmesser.simplecsv.types;
 
 import java.time.LocalDate;
 

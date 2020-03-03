@@ -1,9 +1,5 @@
-package simplecsv;
+package me.landmesser.simplecsv;
 
-import me.landmesser.simplecsv.CSVColumnName;
-import me.landmesser.simplecsv.CSVConverter;
-import me.landmesser.simplecsv.CSVDateFormat;
-import me.landmesser.simplecsv.CSVUseConverter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;

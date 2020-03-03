@@ -1,7 +1,5 @@
-package simplecsv;
+package me.landmesser.simplecsv;
 
-import me.landmesser.simplecsv.CSVConversionException;
-import me.landmesser.simplecsv.CSVConverter;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 

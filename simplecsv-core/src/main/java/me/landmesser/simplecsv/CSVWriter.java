@@ -1,8 +1,5 @@
-package simplecsv;
+package me.landmesser.simplecsv;
 
-import me.landmesser.simplecsv.CSVException;
-import me.landmesser.simplecsv.CSVParseException;
-import me.landmesser.simplecsv.CSVWriteException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
