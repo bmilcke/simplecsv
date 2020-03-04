@@ -4,7 +4,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Logger;
@@ -30,7 +29,7 @@ public class CSVWriter<T> extends ClassParser<T> {
     return this;
   }
 
-  public void write(Writer writer, Stream<T> objects) throws CSVWriteException {
+  public void write(Appendable writer, Stream<T> objects) throws CSVWriteException {
     try (CSVPrinter printer = new CSVPrinter(writer,
       includeHeaders ? getFormat().withHeader(retrieveHeaders().toArray(String[]::new)) : getFormat())) {
       // TODO: optimize?
