@@ -1,5 +1,8 @@
 package me.landmesser.simplecsv;
 
+/**
+ * Exception thrown when an error while parsing the CSV input causes a problem.
+ */
 public class CSVParseException extends CSVException {
   public CSVParseException() {
     super();

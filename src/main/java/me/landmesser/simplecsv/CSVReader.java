@@ -14,6 +14,16 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+/**
+ * Offers the possibility to read a CSV file from a {@link Reader} and
+ * transfer the result in a stream of objects of type <code>T</code>
+ * <p>
+ *   The class of type <code>T</code> is parsed for annotations to
+ *   customize the behaviour of the parser.
+ * </p>
+ *
+ * @param <T> the type of objects that should be created out of the csv input.
+ */
 @SuppressWarnings("unchecked")
 public class CSVReader<T> extends ClassParser<T> {
 

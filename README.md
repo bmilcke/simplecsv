@@ -1,3 +1,5 @@
+[![Latest release](https://img.shields.io/github/release/bmilcke/simplecsv.svg)](https://github.com/bmilcke/simplecsv/releases/latest)
+
 # simplecsv
 Simple Java CSV Library
 

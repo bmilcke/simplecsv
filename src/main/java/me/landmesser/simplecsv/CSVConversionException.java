@@ -1,5 +1,10 @@
 package me.landmesser.simplecsv;
 
+/**
+ * Exception thrown when parsing a value as String does not work as expected.
+ *
+ * @see CSVConverter
+ */
 public class CSVConversionException extends CSVException {
   public CSVConversionException() {
     super();

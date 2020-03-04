@@ -6,9 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Tells the parser to skip the annotated field in export and import.
+ * Determines the default style of the generated column header names.
+ *
+ * @see ColumnNameStyle
  */
-@Target(ElementType.FIELD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CSVIgnore {
+public @interface CSVDefaultColumnName {
+  ColumnNameStyle value();
 }

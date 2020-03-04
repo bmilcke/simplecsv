@@ -7,11 +7,11 @@ import java.util.Objects;
 
 class CSVEntry<T> {
 
-  public CSVEntry(Class<T> type, Field field) {
+  public CSVEntry(Class<T> type, Field field, ColumnNameStyle columnNameStyle) {
     this.type = Objects.requireNonNull(type);
     this.fieldName = Objects.requireNonNull(field).getName();
     determineConverter(field);
-    determineName(field);
+    determineName(field, columnNameStyle);
     determineConverterclass(field);
   }
 
@@ -40,11 +40,26 @@ class CSVEntry<T> {
     return converter;
   }
 
-  private void determineName(Field field) {
+  private void determineName(Field field, ColumnNameStyle columnNameStyle) {
     name = Arrays.stream(field.getAnnotationsByType(CSVColumnName.class))
       .findFirst()
       .map(CSVColumnName::value)
-      .orElse(StringUtils.capitalize(field.getName()));
+      .orElseGet(() -> getDefaultColumnName(field.getName(),
+        columnNameStyle == null ? ColumnNameStyle.CAPITALIZED : columnNameStyle));
+  }
+
+  private String getDefaultColumnName(String name, ColumnNameStyle columnNameStyle) {
+    switch (columnNameStyle) {
+      case LIKE_FIELD:
+        return name;
+      case UPPERCASE:
+        return name.toUpperCase();
+      case LOWERCASE:
+        return name.toLowerCase();
+      case CAPITALIZED:
+      default:
+        return StringUtils.capitalize(name);
+    }
   }
 
   @SuppressWarnings("unchecked, rawtypes")

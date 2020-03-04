@@ -3,7 +3,7 @@ package me.landmesser.simplecsv;
 abstract class StringUtils {
 
   public static String capitalize(String in) {
-    if (in ==null ||in.isEmpty()) {
+    if (in == null || in.isEmpty()) {
       return in;
     }
     if (in.length() > 1) {

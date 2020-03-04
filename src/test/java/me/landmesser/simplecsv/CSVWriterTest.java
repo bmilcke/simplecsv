@@ -2,6 +2,7 @@ package me.landmesser.simplecsv;
 
 import me.landmesser.simplecsv.types.Annotated;
 import me.landmesser.simplecsv.types.AnnotatedWithError;
+import me.landmesser.simplecsv.types.ColumnStyleUppercase;
 import me.landmesser.simplecsv.types.TestEnum;
 import me.landmesser.simplecsv.types.Types;
 import me.landmesser.simplecsv.types.Unannotated;
@@ -18,7 +19,9 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CSVWriterTest {
 
@@ -139,5 +142,16 @@ class CSVWriterTest {
     } catch (IOException ex) {
       throw new CSVException("Wrapped IOException", ex);
     }
+  }
+
+  @Test
+  void testCSVDefaultColumnName() {
+    CSVWriter<ColumnStyleUppercase> writer = new CSVWriter<>(ColumnStyleUppercase.class);
+
+    ColumnStyleUppercase obj = new ColumnStyleUppercase();
+
+    List<String> result = retrieveCSVString(writer, obj);
+    assertFalse(result.isEmpty());
+    assertEquals("FIRST,SECOND,ANOTHERONE", result.get(0));
   }
 }

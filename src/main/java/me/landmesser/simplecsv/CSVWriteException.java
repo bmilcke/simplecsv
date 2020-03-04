@@ -1,5 +1,9 @@
 package me.landmesser.simplecsv;
 
+/**
+ * Exception thrown when an error while writing the CSV output causes a problem.
+ */
+
 public class CSVWriteException extends CSVException {
   public CSVWriteException() {
     super();

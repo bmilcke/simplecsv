@@ -16,6 +16,7 @@ class ClassParser<T> {
   private final List<CSVEntry> entries;
 
   private CSVFormat format = CSVFormat.DEFAULT;
+  private ColumnNameStyle columnNameStyle = ColumnNameStyle.CAPITALIZED;
 
   public ClassParser(Class<T> type) throws CSVException {
     this.type = type;
@@ -33,9 +34,10 @@ class ClassParser<T> {
   @SuppressWarnings({"rawtypes", "unchecked"})
   protected List<CSVEntry> parseClass(Class<T> type) throws CSVException {
     detectConverters(type);
+    determineDefaultColumnStyle(type);
     return Arrays.stream(type.getDeclaredFields())
       .filter(this::isNotIgnored)
-      .map(f -> new CSVEntry(f.getType(), f))
+      .map(f -> new CSVEntry(f.getType(), f, columnNameStyle))
       .collect(Collectors.toList());
   }
 
@@ -67,6 +69,14 @@ class ClassParser<T> {
     return entries;
   }
 
+  public ColumnNameStyle getColumnNameStyle() {
+    return columnNameStyle;
+  }
+
+  private void setColumnNameStyle(ColumnNameStyle columnNameStyle) {
+    this.columnNameStyle = columnNameStyle;
+  }
+
   private boolean isNotIgnored(Field field) {
     return !Arrays.stream(field.getAnnotationsByType(CSVIgnore.class))
       .findAny().isPresent();
@@ -86,5 +96,11 @@ class ClassParser<T> {
         throw new CSVException("Error setting converter", e);
       }
     }
+  }
+
+  private void determineDefaultColumnStyle(Class<T> type) {
+    Arrays.stream(type.getAnnotationsByType(CSVDefaultColumnName.class))
+      .findAny().map(CSVDefaultColumnName::value).ifPresent(this::setColumnNameStyle);
+
   }
 }

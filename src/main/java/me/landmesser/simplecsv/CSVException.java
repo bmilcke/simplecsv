@@ -1,5 +1,8 @@
 package me.landmesser.simplecsv;
 
+/**
+ * Base class for all runtime exceptions thrown by this module.
+ */
 public class CSVException extends RuntimeException {
   public CSVException() {
     super();
