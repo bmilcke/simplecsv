@@ -10,19 +10,6 @@ semicolon. Thus the name CSV for **C**omma **S**eparated **V**alues. (see [Wikip
 This library bases upon [Commons CSV from Apache Commons][1]. In addition to the functionality of commons CSV, with
 simplecsv you can create DTO-like objects that describe the fields you want to export to CSV. 
 
-## Adding simplecsv to your build
-
-You can this library to your Maven-based project by adding this dependency to the `dependencies`-section 
-of your `pom.xml`.
-
-```xml
-<dependency>
-  <groupId>me.landmesser</groupId>
-  <artifactId>simplecsv</artifactId>
-  <version>0.3</version>
-</dependency>
-```
-
 ## Example
 
 Imagine, you want to export a CSV-file containing the fields `firstname`, `lastname`, `dateOfBirth` of a
