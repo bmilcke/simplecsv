@@ -5,19 +5,17 @@ import org.apache.commons.csv.CSVPrinter;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * Offers the possibility to write a CSV file to an {@link Appendable}, e.g.
  * a {@link java.io.Writer} by transforming a stream of objects of type <code>T</code>.
  * <p>
- *   The class of type <code>T</code> is parsed for annotations to
- *   customize the behaviour of the writer.
+ * The class of type <code>T</code> is parsed for annotations to
+ * customize the behaviour of the writer.
  * </p>
  *
  * @param <T> the type of objects that serve as input for the csv output.
@@ -28,7 +26,7 @@ public class CSVWriter<T> extends ClassParser<T> implements Closeable {
   private final CSVPrinter printer;
 
   public CSVWriter(Appendable writer, Class<T> type,
-                   CSVFormat format, boolean withHeaders) throws CSVException, IOException {
+    CSVFormat format, boolean withHeaders) throws CSVException, IOException {
     super(type);
     if (format == null) {
       format = CSVFormat.DEFAULT;
@@ -38,7 +36,6 @@ public class CSVWriter<T> extends ClassParser<T> implements Closeable {
     }
     this.printer = new CSVPrinter(writer, format);
   }
-
 
   public void write(Stream<T> objects) throws CSVWriteException {
     objects.map(this::retrieveLine).map(Stream::toArray)

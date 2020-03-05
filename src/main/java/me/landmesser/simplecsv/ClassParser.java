@@ -23,12 +23,12 @@ class ClassParser<T> {
     entries = parseClass(type);
   }
 
-  protected void setFormat(CSVFormat format) {
-    this.format = format;
-  }
-
   public CSVFormat getFormat() {
     return format;
+  }
+
+  protected void setFormat(CSVFormat format) {
+    this.format = format;
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})

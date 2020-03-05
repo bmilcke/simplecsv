@@ -18,8 +18,8 @@ import java.util.stream.StreamSupport;
  * Offers the possibility to read a CSV file from a {@link Reader} and
  * transfer the result in a stream of objects of type <code>T</code>
  * <p>
- *   The class of type <code>T</code> is parsed for annotations to
- *   customize the behaviour of the parser.
+ * The class of type <code>T</code> is parsed for annotations to
+ * customize the behaviour of the parser.
  * </p>
  *
  * @param <T> the type of objects that should be created out of the csv input.

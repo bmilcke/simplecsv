@@ -3,10 +3,11 @@ package me.landmesser.simplecsv;
 /**
  * Interface for implementing a converter for type <code>T</code>.
  * <p>
- *   Conversion in both directions has to be implemented.
+ * Conversion in both directions has to be implemented.
  * </p>
+ *
  * @param <T> the type which should be converted to a String or
- *           created by parsing an input String.
+ *            created by parsing an input String.
  */
 public interface CSVConverter<T> {
 
@@ -26,7 +27,7 @@ public interface CSVConverter<T> {
    * @param value the String representation coming from a CSV file.
    * @return the converted object.
    * @throws CSVConversionException if there is a problem while parsing
-   * the input, e.g. if the format is not recognized.
+   *                                the input, e.g. if the format is not recognized.
    */
   T parse(String value) throws CSVConversionException;
 }

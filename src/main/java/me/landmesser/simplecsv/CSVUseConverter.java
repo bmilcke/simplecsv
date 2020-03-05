@@ -12,5 +12,6 @@ import java.lang.annotation.Target;
 public @interface CSVUseConverter {
   @SuppressWarnings("rawtypes")
   Class<? extends CSVConverter> value();
+
   Class<?> forType() default Void.class;
 }

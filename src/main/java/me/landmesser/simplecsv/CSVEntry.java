@@ -7,6 +7,11 @@ import java.util.Objects;
 
 class CSVEntry<T> {
 
+  private final Class<T> type;
+  private final String fieldName;
+  private String name;
+  private CSVConverter<T> converter;
+
   public CSVEntry(Class<T> type, Field field, ColumnNameStyle columnNameStyle) {
     this.type = Objects.requireNonNull(type);
     this.fieldName = Objects.requireNonNull(field).getName();
@@ -14,11 +19,6 @@ class CSVEntry<T> {
     determineName(field, columnNameStyle);
     determineConverterclass(field);
   }
-
-  private String name;
-  private final Class<T> type;
-  private final String fieldName;
-  private CSVConverter<T> converter;
 
   public String getName() {
     return name;
