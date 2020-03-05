@@ -3,6 +3,7 @@ package me.landmesser.simplecsv;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
@@ -22,34 +23,37 @@ import java.util.stream.Stream;
  * @param <T> the type of objects that serve as input for the csv output.
  */
 @SuppressWarnings({"unchecked"})
-public class CSVWriter<T> extends ClassParser<T> {
+public class CSVWriter<T> extends ClassParser<T> implements Closeable {
 
-  private boolean includeHeaders = true;
+  private final CSVPrinter printer;
 
-  public CSVWriter(Class<T> type) throws CSVException {
+  public CSVWriter(Appendable writer, Class<T> type,
+                   CSVFormat format, boolean withHeaders) throws CSVException, IOException {
     super(type);
-  }
-
-  public CSVWriter<T> withFormat(CSVFormat format) {
-    setFormat(format);
-    return this;
-  }
-
-  public CSVWriter<T> withoutHeaders() {
-    includeHeaders = false;
-    return this;
-  }
-
-  public void write(Appendable writer, Stream<T> objects) throws CSVWriteException {
-    try (CSVPrinter printer = new CSVPrinter(writer,
-      includeHeaders ? getFormat().withHeader(retrieveHeaders().toArray(String[]::new)) : getFormat())) {
-      // TODO: optimize?
-      for (T o : objects.collect(Collectors.toList())) {
-        printer.printRecord(retrieveLine(o).toArray());
-      }
-    } catch (IOException e) {
-      throw new CSVWriteException("Error writing CSV file", e);
+    if (format == null) {
+      format = CSVFormat.DEFAULT;
     }
+    if (withHeaders) {
+      format = format.withHeader(retrieveHeaders().toArray(String[]::new));
+    }
+    this.printer = new CSVPrinter(writer, format);
+  }
+
+
+  public void write(Stream<T> objects) throws CSVWriteException {
+    objects.map(this::retrieveLine).map(Stream::toArray)
+      .forEach(rec -> {
+        try {
+          printer.printRecord(rec);
+        } catch (IOException e) {
+          throw new CSVWriteException("IOException while writing", e);
+        }
+      });
+  }
+
+  @Override
+  public void close() throws IOException {
+    printer.close();
   }
 
   private Stream<String> retrieveHeaders() {

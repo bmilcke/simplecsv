@@ -4,15 +4,15 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Offers the possibility to read a CSV file from a {@link Reader} and
@@ -25,30 +25,23 @@ import java.util.stream.Stream;
  * @param <T> the type of objects that should be created out of the csv input.
  */
 @SuppressWarnings("unchecked")
-public class CSVReader<T> extends ClassParser<T> {
+public class CSVReader<T> extends ClassParser<T> implements Closeable {
 
-  public CSVReader(Class<T> type) throws CSVException {
+  private final CSVParser parser;
+
+  public CSVReader(Reader reader, Class<T> type, CSVFormat format) throws CSVException, IOException {
     super(type);
+    parser = new CSVParser(reader, format);
   }
 
-  public CSVReader<T> withFormat(CSVFormat format) {
-    setFormat(format);
-    return this;
+  public Stream<T> read() throws CSVParseException {
+    return StreamSupport.stream(parser.spliterator(), false)
+      .map(this::readSingle);
   }
 
-  public Stream<T> read(Reader reader) throws CSVParseException {
-    try (CSVParser parser = new CSVParser(reader, getFormat())) {
-      // TODO: why does this not work?
-//      return StreamSupport.stream(parser.spliterator(), false)
-//        .map(this::readSingle);
-      List<T> result = new ArrayList<>();
-      for(CSVRecord rec : parser) {
-        result.add(readSingle(rec));
-      }
-      return result.stream();
-    } catch (IOException e) {
-      throw new CSVParseException("Error reading input", e);
-    }
+  @Override
+  public void close() throws IOException {
+    parser.close();
   }
 
   private T readSingle(CSVRecord record) throws CSVParseException {

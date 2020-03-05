@@ -18,12 +18,13 @@ class CSVReaderTest {
 
   @Test
   void unannotated() throws IOException {
-    CSVReader<Unannotated> reader = new CSVReader<>(Unannotated.class)
-      .withFormat(CSVFormat.RFC4180.withDelimiter(';').withFirstRecordAsHeader());
-
     try (InputStream inp = getClass().getResourceAsStream("/unannotated.csv");
-         Reader stringReader = new InputStreamReader(inp)) {
-      List<Unannotated> result = reader.read(stringReader).collect(Collectors.toList());
+         Reader stringReader = new InputStreamReader(inp);
+         CSVReader<Unannotated> reader = new CSVReader<>(
+           stringReader, Unannotated.class,
+           CSVFormat.RFC4180.withDelimiter(';')
+             .withFirstRecordAsHeader().withSkipHeaderRecord())) {
+      List<Unannotated> result = reader.read().collect(Collectors.toList());
       assertEquals(1, result.size());
 
       Unannotated resultObject = result.get(0);
