@@ -1,8 +1,7 @@
+# simplecsv: _Java Library for exporting Objects to CSV_
+
 [![Latest release](https://img.shields.io/github/release/bmilcke/simplecsv.svg)](https://github.com/bmilcke/simplecsv/releases/latest)
 ![Java CI](https://github.com/bmilcke/simplecsv/workflows/Java%20CI/badge.svg)
-
-# simplecsv
-Simple Java CSV Library
 
 Uses [Commons CSV from Apache Commons][1]. But allows using Java Beans for export and import.
 
