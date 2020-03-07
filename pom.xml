@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>me.landmesser.simplecsv</groupId>
   <artifactId>simplecsv</artifactId>
   <packaging>jar</packaging>
-  <version>0.3-SNAPSHOT</version>
+  <version>0.3</version>
 
   <name>${project.groupId}:${project.artifactId}</name>
   <description>Module that allows exporting Java beans into CSV format. Configuration
@@ -36,6 +34,7 @@
     <connection>scm:git:https://github.com/bmilcke/simplecsv.git</connection>
     <developerConnection>scm:git:git@github.com:bmilcke/simplecsv.git</developerConnection>
     <url>https://github.com/bmilcke/simplecsv</url>
+    <tag>simplecsv-0.3</tag>
   </scm>
   <ciManagement>
     <system>GitHub Workflow</system>
