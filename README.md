@@ -65,13 +65,14 @@ public exportToCsv(Stream<Person> employees) {
     try (StringWriter sw = new StringWriter();
          CSVWriter<CsvEntity> writer = new CSVWriter<>(sw, CsvEntity.class,
              CSVFormat.RFC4180.withDelimiter(';'), true))) {
-      writer.write(employees.map(this::convertToCsv));
+      writer.write(employees.map(this::mapToCsvEntity));
       System.out.println(sw.toString());
     } catch (IOException ex) {
       logger.error("Could not write CSV file", ex);
     }
 }
 ```
+ The method `mapToCsvEntity` in this example would create an object that contains all the fields for export to CSV. Of course, you could skip the mapping, if you want to export the Employee object itself. If there are fields in that object which should not be exported, you could annotate those with `@CSVIgnore`.
  
  As you can see here, the export works stream-based, like in Apache Commons CSV. This means, you can
  save a lot of memory when storing large amounts of records.
