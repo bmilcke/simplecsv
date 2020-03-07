@@ -22,7 +22,7 @@ class CSVReaderTest {
          Reader stringReader = new InputStreamReader(inp);
          CSVReader<Unannotated> reader = new CSVReader<>(
            stringReader, Unannotated.class,
-           CSVFormat.RFC4180.withDelimiter(';')
+           CSVFormat.RFC4180.withDelimiter(',')
              .withFirstRecordAsHeader().withSkipHeaderRecord())) {
       List<Unannotated> result = reader.read().collect(Collectors.toList());
       assertEquals(1, result.size());
