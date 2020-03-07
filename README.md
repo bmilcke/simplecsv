@@ -12,7 +12,7 @@ simplecsv you can create DTO-like objects that describe the fields you want to e
 
 ## Adding simplecsv to your build
 
-You can this library to your Maven-based project by adding this dependency to the `dependencies`-section 
+You can add this library to your Maven-based project by adding this dependency to the `dependencies`-section 
 of your `pom.xml`.
 
 ```xml
