@@ -1,16 +1,16 @@
 package me.landmesser.simplecsv;
 
-class Pair<T> {
+class Pair<T, U> {
 
   private final T first;
-  private final T second;
+  private final U second;
 
-  private Pair(T first, T second) {
+  private Pair(T first, U second) {
     this.first = first;
     this.second = second;
   }
 
-  public static <R> Pair<R> of(R first, R second) {
+  public static <R, S> Pair<R, S> of(R first, S second) {
     return new Pair<>(first, second);
   }
 
@@ -18,7 +18,7 @@ class Pair<T> {
     return first;
   }
 
-  public T getSecond() {
+  public U getSecond() {
     return second;
   }
 }
