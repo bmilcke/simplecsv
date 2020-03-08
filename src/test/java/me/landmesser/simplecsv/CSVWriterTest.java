@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -74,13 +75,14 @@ class CSVWriterTest {
   }
 
   @Test
-  void testNullValues() throws CSVException {
+  void testAllTypes() throws CSVException {
     Types object = new Types();
 
     List<String> result = retrieveCSVString(object, Types.class, null, true);
     assertEquals(2, result.size());
-    assertEquals("String,PrimInt,PrimChar,PrimBoolean,Integer,Character,BoleanVal", result.get(0));
-    assertEquals(String.format(",0,\"%c\",false,,,", 0), result.get(1));
+    assertEquals("String,PrimInt,PrimChar,PrimBoolean,Integer,Character,BoleanVal,BigDecimal,LocalTime,LocalDate,LocalDateTime,TestEnum",
+      result.get(0));
+    assertEquals(String.format(",0,\"%c\",false,,,,,,,,", 0), result.get(1));
 
     object.setString("");
     object.setPrimInt(2);
@@ -89,11 +91,16 @@ class CSVWriterTest {
     object.setInteger(5);
     object.setCharacter('#');
     object.setBooleanVal(false);
+    object.setBigDecimal(BigDecimal.TEN);
+    object.setLocalTime(LocalTime.of(4, 31, 7, 213_243_654));
+    object.setLocalDate(LocalDate.of(2020, 3, 25));
+    object.setLocalDateTime(LocalDateTime.of(2020, 2, 29, 17, 21, 44));
+    object.setTestEnum(TestEnum.FOURTH);
 
     result = retrieveCSVString(object, Types.class, null, true);
     assertEquals(2, result.size());
-    assertEquals("String,PrimInt,PrimChar,PrimBoolean,Integer,Character,BoleanVal", result.get(0));
-    assertEquals("\"\",2,ö,true,5,\"#\",false", result.get(1));
+    assertEquals("String,PrimInt,PrimChar,PrimBoolean,Integer,Character,BoleanVal,BigDecimal,LocalTime,LocalDate,LocalDateTime,TestEnum", result.get(0));
+    assertEquals("\"\",2,ö,true,5,\"#\",false,10,04:31:07.213243654,2020-03-25,2020-02-29T17:21:44,FOURTH", result.get(1));
   }
 
   @Test
@@ -104,19 +111,19 @@ class CSVWriterTest {
 
     List<String> result = retrieveCSVString(object, Types.class, null, true);
     assertEquals(2, result.size());
-    assertEquals("A string with spaces,0,x,false,,,", result.get(1));
+    assertEquals("A string with spaces,0,x,false,,,,,,,,", result.get(1));
 
     object.setString("A string with spaces, and also commas");
 
     result = retrieveCSVString(object, Types.class, null, true);
     assertEquals(2, result.size());
-    assertEquals("\"A string with spaces, and also commas\",0,x,false,,,", result.get(1));
+    assertEquals("\"A string with spaces, and also commas\",0,x,false,,,,,,,,", result.get(1));
 
     object.setString("This one with \"");
 
     result = retrieveCSVString(object, Types.class, null, true);
     assertEquals(2, result.size());
-    assertEquals("\"This one with \"\"\",0,x,false,,,", result.get(1));
+    assertEquals("\"This one with \"\"\",0,x,false,,,,,,,,", result.get(1));
   }
 
   @Test

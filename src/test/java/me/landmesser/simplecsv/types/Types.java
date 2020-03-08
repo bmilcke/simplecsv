@@ -1,5 +1,10 @@
 package me.landmesser.simplecsv.types;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 public class Types {
 
   private String string;
@@ -10,6 +15,13 @@ public class Types {
   private Integer integer;
   private Character character;
   private Boolean boleanVal;
+
+  private BigDecimal bigDecimal;
+  private LocalTime localTime;
+  private LocalDate localDate;
+  private LocalDateTime localDateTime;
+
+  private TestEnum testEnum;
 
   public String getString() {
     return string;
@@ -65,5 +77,49 @@ public class Types {
 
   public void setBooleanVal(Boolean boleanVal) {
     this.boleanVal = boleanVal;
+  }
+
+  public void setBoleanVal(Boolean boleanVal) {
+    this.boleanVal = boleanVal;
+  }
+
+  public BigDecimal getBigDecimal() {
+    return bigDecimal;
+  }
+
+  public void setBigDecimal(BigDecimal bigDecimal) {
+    this.bigDecimal = bigDecimal;
+  }
+
+  public LocalTime getLocalTime() {
+    return localTime;
+  }
+
+  public void setLocalTime(LocalTime localTime) {
+    this.localTime = localTime;
+  }
+
+  public LocalDate getLocalDate() {
+    return localDate;
+  }
+
+  public void setLocalDate(LocalDate localDate) {
+    this.localDate = localDate;
+  }
+
+  public LocalDateTime getLocalDateTime() {
+    return localDateTime;
+  }
+
+  public void setLocalDateTime(LocalDateTime localDateTime) {
+    this.localDateTime = localDateTime;
+  }
+
+  public TestEnum getTestEnum() {
+    return testEnum;
+  }
+
+  public void setTestEnum(TestEnum testEnum) {
+    this.testEnum = testEnum;
   }
 }

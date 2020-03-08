@@ -2,8 +2,11 @@ package me.landmesser.simplecsv;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.HashMap;
@@ -29,7 +32,9 @@ class Converters {
   private static final Map<Class<? extends TemporalAccessor>, DateTimeFormatter> DATE_TIME_FORMATTERS =
     Stream.of(
       Pair.of(LocalDate.class, DateTimeFormatter.ISO_LOCAL_DATE),
-      Pair.of(LocalDateTime.class, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+      Pair.of(LocalTime.class, DateTimeFormatter.ISO_LOCAL_TIME),
+      Pair.of(LocalDateTime.class, DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+      Pair.of(ZonedDateTime.class, DateTimeFormatter.ISO_DATE_TIME)
     ).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 
   private final Map<Class<?>, CSVConverter<?>> converters = new HashMap<>();
@@ -63,7 +68,7 @@ class Converters {
 
   @SuppressWarnings("unchecked, rawtypes")
   public <T> T parse(Class<?> type, String value) throws CSVConversionException {
-    if (value == null || value.equals("")) {
+    if (value == null || value.isEmpty()) {
       return null;
     }
     if (converters.containsKey(type)) {
@@ -89,6 +94,11 @@ class Converters {
         if (type.isInstance(valueOfResult)) {
           return (T)valueOfResult;
         }
+      } else if(BigDecimal.class.isAssignableFrom(type)) {
+        return (T)new BigDecimal(value);
+      }
+      if (adaptedType.equals(Character.class)) {
+        return (T)(Character.valueOf(value.charAt(0)));
       }
       String parseMethodAppendix = adaptedType.getSimpleName();
       if (parseMethodAppendix.equals("Integer")) {
@@ -118,17 +128,5 @@ class Converters {
       return boxedObject.toString();
     }
     return null;
-  }
-
-  @SuppressWarnings({"rawtypes"})
-  <T> T parsePrimitive(Class<T> primitiveType, String input) throws CSVConversionException {
-    if (PRIMITIVE_WRAPPERS.containsKey(primitiveType)) {
-      Class<?> boxedType = PRIMITIVE_WRAPPERS.get(primitiveType);
-      CSVConverter converter = converterFor(boxedType);
-      if (converter != null) {
-        return primitiveType.cast(converter.parse(input));
-      }
-    }
-    throw new CSVConversionException("Type is not primitive");
   }
 }
