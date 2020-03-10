@@ -1,6 +1,6 @@
 package me.landmesser.simplecsv.types;
 
-import me.landmesser.simplecsv.CSVDefaultColumnName;
+import me.landmesser.simplecsv.annotation.CSVDefaultColumnName;
 import me.landmesser.simplecsv.ColumnNameStyle;
 
 @CSVDefaultColumnName(ColumnNameStyle.UPPERCASE)

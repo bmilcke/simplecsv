@@ -1,6 +1,6 @@
 package me.landmesser.simplecsv;
 
-import org.junit.jupiter.api.Test;
+import me.landmesser.simplecsv.util.StringUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -13,7 +13,7 @@ class StringUtilsTest {
     ",",
     "'',''",
     "' ',' '",
-    "###,###",
+    "\"###\",\"###\"",
     "\"\",\"\"",
     "a,A",
     "ab,Ab",

@@ -1,4 +1,4 @@
-package me.landmesser.simplecsv;
+package me.landmesser.simplecsv.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

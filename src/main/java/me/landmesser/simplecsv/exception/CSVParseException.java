@@ -1,4 +1,4 @@
-package me.landmesser.simplecsv;
+package me.landmesser.simplecsv.exception;
 
 /**
  * Exception thrown when an error while parsing the CSV input causes a problem.

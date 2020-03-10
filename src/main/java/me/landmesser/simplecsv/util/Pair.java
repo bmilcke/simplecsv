@@ -1,6 +1,6 @@
-package me.landmesser.simplecsv;
+package me.landmesser.simplecsv.util;
 
-class Pair<T, U> {
+public class Pair<T, U> {
 
   private final T first;
   private final U second;

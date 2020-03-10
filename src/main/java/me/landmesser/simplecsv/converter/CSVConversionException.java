@@ -1,4 +1,6 @@
-package me.landmesser.simplecsv;
+package me.landmesser.simplecsv.converter;
+
+import me.landmesser.simplecsv.exception.CSVException;
 
 /**
  * Exception thrown when parsing a value as String does not work as expected.

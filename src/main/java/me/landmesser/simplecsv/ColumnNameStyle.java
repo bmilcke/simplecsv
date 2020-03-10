@@ -1,5 +1,7 @@
 package me.landmesser.simplecsv;
 
+import me.landmesser.simplecsv.annotation.CSVDefaultColumnName;
+
 /**
  * Determines the default column name style.
  *

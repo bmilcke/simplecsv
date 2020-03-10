@@ -1,5 +1,12 @@
 package me.landmesser.simplecsv;
 
+import me.landmesser.simplecsv.converter.BigDecimalConverter;
+import me.landmesser.simplecsv.converter.CSVConversionException;
+import me.landmesser.simplecsv.converter.CSVConverter;
+import me.landmesser.simplecsv.converter.CharacterConverter;
+import me.landmesser.simplecsv.converter.IntegerConverter;
+import me.landmesser.simplecsv.util.Pair;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -51,6 +58,12 @@ class Converters {
     return converters.get(type);
   }
 
+  public Converters() {
+    converters.put(Character.class, new CharacterConverter());
+    converters.put(Integer.class, new IntegerConverter());
+    converters.put(BigDecimal.class, new BigDecimalConverter());
+  }
+
   @SuppressWarnings({"unchecked", "rawtypes"})
   public String convert(Class<?> type, Object object) {
     if (object == null) {
@@ -71,17 +84,18 @@ class Converters {
     if (value == null || value.isEmpty()) {
       return null;
     }
-    if (converters.containsKey(type)) {
-      return (T)((CSVConverter)(converters.get(type))).parse(value);
-    }
     if (type.isInstance(value)) {
       return (T)type.cast(value);
     }
+    Class<?> adaptedType = type;
+    if (type.isPrimitive()) {
+      adaptedType = PRIMITIVE_WRAPPERS.get(type);
+    }
+    if (converters.containsKey(adaptedType)) {
+      return (T)((CSVConverter)(converters.get(adaptedType))).parse(value);
+    }
     try {
-      Class<?> adaptedType = type;
-      if (type.isPrimitive()) {
-        adaptedType = PRIMITIVE_WRAPPERS.get(type);
-      } else if (TemporalAccessor.class.isAssignableFrom(type) && DATE_TIME_FORMATTERS.containsKey(type)) {
+      if (TemporalAccessor.class.isAssignableFrom(type) && DATE_TIME_FORMATTERS.containsKey(type)) {
         TemporalAccessor result = DATE_TIME_FORMATTERS.get(type).parse(value);
         Method fromMethod = type.getDeclaredMethod("from", TemporalAccessor.class);
         Object fromResult = fromMethod.invoke(null, result);
@@ -94,17 +108,9 @@ class Converters {
         if (type.isInstance(valueOfResult)) {
           return (T)valueOfResult;
         }
-      } else if(BigDecimal.class.isAssignableFrom(type)) {
-        return (T)new BigDecimal(value);
       }
-      if (adaptedType.equals(Character.class)) {
-        return (T)(Character.valueOf(value.charAt(0)));
-      }
-      String parseMethodAppendix = adaptedType.getSimpleName();
-      if (parseMethodAppendix.equals("Integer")) {
-        parseMethodAppendix = "Int";
-      }
-      Method valMethod = adaptedType.getDeclaredMethod("parse" + parseMethodAppendix, String.class);
+      // parseXxx methods at String for primitive Wrappers
+      Method valMethod = adaptedType.getDeclaredMethod("parse" + adaptedType.getSimpleName(), String.class);
       Object result = valMethod.invoke(null, value);
       if (adaptedType.isInstance(result)) {
         return (T)result;

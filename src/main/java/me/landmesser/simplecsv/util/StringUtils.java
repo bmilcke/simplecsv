@@ -1,6 +1,6 @@
-package me.landmesser.simplecsv;
+package me.landmesser.simplecsv.util;
 
-abstract class StringUtils {
+abstract public class StringUtils {
 
   public static String capitalize(String in) {
     if (in == null || in.isEmpty()) {

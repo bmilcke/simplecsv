@@ -1,6 +1,6 @@
 package me.landmesser.simplecsv.types;
 
-import me.landmesser.simplecsv.CSVUseConverter;
+import me.landmesser.simplecsv.annotation.CSVUseConverter;
 
 @CSVUseConverter(GermanBooleanConverter.class)
 public class AnnotatedWithError {

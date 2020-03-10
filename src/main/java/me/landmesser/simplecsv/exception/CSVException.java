@@ -1,4 +1,4 @@
-package me.landmesser.simplecsv;
+package me.landmesser.simplecsv.exception;
 
 /**
  * Base class for all runtime exceptions thrown by this module.
