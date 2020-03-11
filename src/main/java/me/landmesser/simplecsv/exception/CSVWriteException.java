@@ -1,7 +1,5 @@
 package me.landmesser.simplecsv.exception;
 
-import me.landmesser.simplecsv.exception.CSVException;
-
 /**
  * Exception thrown when an error while writing the CSV output causes a problem.
  */

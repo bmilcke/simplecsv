@@ -51,7 +51,7 @@ class ClassParser<T> {
     return converters.convert(type, object);
   }
 
-  protected <R> R parse(Class<?> type, String value) throws CSVConversionException {
+  protected <R> R parse(Class<R> type, String value) throws CSVConversionException {
     return converters.parse(type, value);
   }
 

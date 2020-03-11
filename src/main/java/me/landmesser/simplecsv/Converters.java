@@ -5,16 +5,12 @@ import me.landmesser.simplecsv.converter.CSVConversionException;
 import me.landmesser.simplecsv.converter.CSVConverter;
 import me.landmesser.simplecsv.converter.CharacterConverter;
 import me.landmesser.simplecsv.converter.IntegerConverter;
+import me.landmesser.simplecsv.converter.TemporalAccessorConverter;
 import me.landmesser.simplecsv.util.Pair;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,15 +32,15 @@ class Converters {
       Pair.of(void.class, Void.class)
     ).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 
-  private static final Map<Class<? extends TemporalAccessor>, DateTimeFormatter> DATE_TIME_FORMATTERS =
-    Stream.of(
-      Pair.of(LocalDate.class, DateTimeFormatter.ISO_LOCAL_DATE),
-      Pair.of(LocalTime.class, DateTimeFormatter.ISO_LOCAL_TIME),
-      Pair.of(LocalDateTime.class, DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-      Pair.of(ZonedDateTime.class, DateTimeFormatter.ISO_DATE_TIME)
-    ).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
-
   private final Map<Class<?>, CSVConverter<?>> converters = new HashMap<>();
+
+  private final TemporalAccessorConverter taConverter = new TemporalAccessorConverter();
+
+  public Converters() {
+    converters.put(Character.class, new CharacterConverter());
+    converters.put(Integer.class, new IntegerConverter());
+    converters.put(BigDecimal.class, new BigDecimalConverter());
+  }
 
   public <T> void setConverter(Class<T> type, CSVConverter<T> converter) {
     converters.put(type, converter);
@@ -56,12 +52,6 @@ class Converters {
 
   CSVConverter<?> converterFor(Class<?> type) {
     return converters.get(type);
-  }
-
-  public Converters() {
-    converters.put(Character.class, new CharacterConverter());
-    converters.put(Integer.class, new IntegerConverter());
-    converters.put(BigDecimal.class, new BigDecimalConverter());
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
@@ -80,12 +70,12 @@ class Converters {
   }
 
   @SuppressWarnings("unchecked, rawtypes")
-  public <T> T parse(Class<?> type, String value) throws CSVConversionException {
+  public <T> T parse(Class<T> type, String value) throws CSVConversionException {
     if (value == null || value.isEmpty()) {
       return null;
     }
     if (type.isInstance(value)) {
-      return (T)type.cast(value);
+      return type.cast(value);
     }
     Class<?> adaptedType = type;
     if (type.isPrimitive()) {
@@ -95,13 +85,8 @@ class Converters {
       return (T)((CSVConverter)(converters.get(adaptedType))).parse(value);
     }
     try {
-      if (TemporalAccessor.class.isAssignableFrom(type) && DATE_TIME_FORMATTERS.containsKey(type)) {
-        TemporalAccessor result = DATE_TIME_FORMATTERS.get(type).parse(value);
-        Method fromMethod = type.getDeclaredMethod("from", TemporalAccessor.class);
-        Object fromResult = fromMethod.invoke(null, result);
-        if (type.isInstance(fromResult)) {
-          return (T)fromResult;
-        }
+      if (TemporalAccessor.class.isAssignableFrom(type)) {
+        return taConverter.parse(value, type);
       } else if (Enum.class.isAssignableFrom(type)) {
         Method valueOfMethod = type.getDeclaredMethod("valueOf", String.class);
         Object valueOfResult = valueOfMethod.invoke(null, value);
@@ -117,7 +102,7 @@ class Converters {
       }
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
       throw new CSVConversionException("No converter found for type " + type.getName(), e);
-    } catch(IllegalArgumentException e) {
+    } catch (IllegalArgumentException e) {
       throw new CSVConversionException("Value " + value + " could not be parsed for type" + type.getName(), e);
     }
     return null;
