@@ -1,10 +1,13 @@
 package me.landmesser.simplecsv.converter;
 
+import me.landmesser.simplecsv.util.Pair;
+
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class EnumConverter<T extends Enum<T>> implements CSVConverter<T> {
 
@@ -23,6 +26,10 @@ public class EnumConverter<T extends Enum<T>> implements CSVConverter<T> {
     if (valueMapping != null) {
       this.valueMapping.putAll(valueMapping);
     }
+  }
+
+  public EnumConverter(Class<T> type, Stream<Pair<T, String>> mapping) {
+    this(type, mapping.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond)));
   }
 
   @Override

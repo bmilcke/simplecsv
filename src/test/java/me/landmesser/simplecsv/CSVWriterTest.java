@@ -143,7 +143,7 @@ class CSVWriterTest {
     assertEquals("FIRST,SECOND,ANOTHERONE", result.get(0));
   }
 
-  private <T> List<String> retrieveCSVString(T object, Class<T> type, CSVFormat format, boolean withHeaders) throws CSVException {
+  static <T> List<String> retrieveCSVString(T object, Class<T> type, CSVFormat format, boolean withHeaders) throws CSVException {
     try (StringWriter sw = new StringWriter();
          CSVWriter<T> writer = new CSVWriter<>(sw, type, format, withHeaders)) {
       writer.write(Stream.of(object));
