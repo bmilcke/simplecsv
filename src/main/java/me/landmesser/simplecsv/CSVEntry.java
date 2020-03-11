@@ -5,11 +5,13 @@ import me.landmesser.simplecsv.annotation.CSVDateFormat;
 import me.landmesser.simplecsv.annotation.CSVUseConverter;
 import me.landmesser.simplecsv.converter.CSVConverter;
 import me.landmesser.simplecsv.converter.CSVDateConverter;
+import me.landmesser.simplecsv.converter.CSVUtilDateConverter;
 import me.landmesser.simplecsv.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Objects;
 
 class CSVEntry<T> {
@@ -74,7 +76,9 @@ class CSVEntry<T> {
     converter = Arrays.stream(field.getAnnotationsByType(CSVDateFormat.class))
       .findFirst()
       .map(CSVDateFormat::value)
-      .map(fmt -> new CSVDateConverter(field.getType(), fmt)).orElse(null);
+      .map(fmt ->
+        (Date.class.isAssignableFrom(field.getType())) ? new CSVUtilDateConverter(fmt)
+          : new CSVDateConverter(field.getType(), fmt)).orElse(null);
   }
 
   @SuppressWarnings("unchecked")

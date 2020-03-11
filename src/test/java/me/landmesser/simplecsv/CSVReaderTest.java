@@ -73,6 +73,7 @@ class CSVReaderTest {
       assertEquals(LocalDate.of(2020, 2, 21), t1.getLocalDate());
       assertEquals(LocalDateTime.of(2020, 1, 12, 22, 13, 2), t1.getLocalDateTime());
       assertEquals(TestEnum.THIRD, t1.getTestEnum());
+      assertEquals(1549984952130L, t1.getOldSchool().getTime());
     }
   }
 }

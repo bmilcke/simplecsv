@@ -1,13 +1,14 @@
 package me.landmesser.simplecsv.types;
 
 import me.landmesser.simplecsv.annotation.CSVColumnName;
-import me.landmesser.simplecsv.annotation.CSVUseConverter;
-import me.landmesser.simplecsv.annotation.CSVUseConverters;
 import me.landmesser.simplecsv.annotation.CSVDateFormat;
 import me.landmesser.simplecsv.annotation.CSVIgnore;
+import me.landmesser.simplecsv.annotation.CSVUseConverter;
+import me.landmesser.simplecsv.annotation.CSVUseConverters;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @CSVUseConverters({
   @CSVUseConverter(value = GermanBooleanConverter.class, forType = Boolean.class),
@@ -33,6 +34,10 @@ public class Annotated {
 
   // Converter set at class level should be used
   private boolean checked;
+
+  @CSVColumnName("Old Date")
+  @CSVDateFormat("dd.MM.yyyy HH:mm")
+  private Date oldSchoolDate;
 
   public String getName() {
     return name;
@@ -88,5 +93,13 @@ public class Annotated {
 
   public void setChecked(boolean checked) {
     this.checked = checked;
+  }
+
+  public Date getOldSchoolDate() {
+    return oldSchoolDate;
+  }
+
+  public void setOldSchoolDate(Date oldSchoolDate) {
+    this.oldSchoolDate = oldSchoolDate;
   }
 }

@@ -6,12 +6,14 @@ import me.landmesser.simplecsv.converter.CSVConverter;
 import me.landmesser.simplecsv.converter.CharacterConverter;
 import me.landmesser.simplecsv.converter.IntegerConverter;
 import me.landmesser.simplecsv.converter.TemporalAccessorConverter;
+import me.landmesser.simplecsv.converter.UtilDateConverter;
 import me.landmesser.simplecsv.util.Pair;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.time.temporal.TemporalAccessor;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,6 +42,7 @@ class Converters {
     converters.put(Character.class, new CharacterConverter());
     converters.put(Integer.class, new IntegerConverter());
     converters.put(BigDecimal.class, new BigDecimalConverter());
+    converters.put(Date.class, new UtilDateConverter());
   }
 
   public <T> void setConverter(Class<T> type, CSVConverter<T> converter) {

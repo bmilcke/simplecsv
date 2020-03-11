@@ -1,9 +1,12 @@
 package me.landmesser.simplecsv.types;
 
+import me.landmesser.simplecsv.annotation.CSVDateFormat;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Date;
 
 public class Types {
 
@@ -22,6 +25,8 @@ public class Types {
   private LocalDateTime localDateTime;
 
   private TestEnum testEnum;
+
+  private Date oldSchool;
 
   public String getString() {
     return string;
@@ -121,5 +126,13 @@ public class Types {
 
   public void setTestEnum(TestEnum testEnum) {
     this.testEnum = testEnum;
+  }
+
+  public Date getOldSchool() {
+    return oldSchool;
+  }
+
+  public void setOldSchool(Date oldSchool) {
+    this.oldSchool = oldSchool;
   }
 }
