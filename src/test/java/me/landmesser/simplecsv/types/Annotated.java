@@ -1,6 +1,5 @@
 package me.landmesser.simplecsv.types;
 
-import me.landmesser.simplecsv.ListConverter;
 import me.landmesser.simplecsv.annotation.CSVColumnName;
 import me.landmesser.simplecsv.annotation.CSVDateFormat;
 import me.landmesser.simplecsv.annotation.CSVIgnore;
@@ -113,10 +112,11 @@ public class Annotated {
   }
 
   public void setDateList(List<LocalDate> list) {
-    if(dateList == null) {
+    if (dateList == null) {
       dateList = new ArrayList<>();
-    } else
+    } else {
       dateList.clear();
+    }
     dateList.addAll(list);
   }
 }

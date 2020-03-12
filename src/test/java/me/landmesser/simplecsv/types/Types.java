@@ -1,8 +1,5 @@
 package me.landmesser.simplecsv.types;
 
-import me.landmesser.simplecsv.ListConverter;
-import me.landmesser.simplecsv.annotation.CSVUseConverter;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -86,10 +83,6 @@ public class Types {
   }
 
   public void setBooleanVal(Boolean boleanVal) {
-    this.boleanVal = boleanVal;
-  }
-
-  public void setBoleanVal(Boolean boleanVal) {
     this.boleanVal = boleanVal;
   }
 

@@ -1,12 +1,13 @@
 package me.landmesser.simplecsv.types;
 
-import me.landmesser.simplecsv.converter.CSVConverter;
 import me.landmesser.simplecsv.converter.CSVConversionException;
+import me.landmesser.simplecsv.converter.CSVConverter;
 
 public class GermanBooleanConverter implements CSVConverter<Boolean> {
 
   private static final String TRUE_VAL = "wahr";
   private static final String FALSE_VAL = "falsch";
+
   @Override
   public String convert(Boolean value) {
     return value == null ? null : value ? TRUE_VAL : FALSE_VAL;

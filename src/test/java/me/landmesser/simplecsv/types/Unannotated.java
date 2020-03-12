@@ -5,6 +5,7 @@ import me.landmesser.simplecsv.annotation.CSVUseConverter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public class Unannotated {
 
@@ -23,6 +24,9 @@ public class Unannotated {
   private Integer memberSinceYear;
 
   private TestEnum testEnum;
+
+  public Unannotated() {
+  }
 
   // getter and setter
 

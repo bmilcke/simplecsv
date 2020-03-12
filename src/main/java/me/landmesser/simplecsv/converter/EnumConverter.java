@@ -12,10 +12,8 @@ import java.util.stream.Stream;
 public class EnumConverter<T extends Enum<T>> implements CSVConverter<T> {
 
   private final Map<T, String> valueMapping;
-  private final Class<T> type;
 
   public EnumConverter(Class<T> type) {
-    this.type = type;
     valueMapping = new EnumMap<>(
       Arrays.stream(type.getEnumConstants()).collect(
         Collectors.toMap(Function.identity(), Enum::name)));

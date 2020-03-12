@@ -1,7 +1,7 @@
 package me.landmesser.simplecsv.types;
 
-import me.landmesser.simplecsv.converter.CSVConverter;
 import me.landmesser.simplecsv.converter.CSVConversionException;
+import me.landmesser.simplecsv.converter.CSVConverter;
 import org.junit.platform.commons.util.StringUtils;
 
 import java.text.NumberFormat;
