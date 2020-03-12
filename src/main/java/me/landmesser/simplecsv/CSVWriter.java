@@ -3,6 +3,8 @@ package me.landmesser.simplecsv;
 import me.landmesser.simplecsv.exception.CSVException;
 import me.landmesser.simplecsv.exception.CSVParseException;
 import me.landmesser.simplecsv.exception.CSVWriteException;
+import me.landmesser.simplecsv.impl.CSVEntry;
+import me.landmesser.simplecsv.impl.ClassParser;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 

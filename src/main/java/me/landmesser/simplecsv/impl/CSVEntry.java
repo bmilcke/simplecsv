@@ -1,5 +1,7 @@
-package me.landmesser.simplecsv;
+package me.landmesser.simplecsv.impl;
 
+import me.landmesser.simplecsv.ColumnNameStyle;
+import me.landmesser.simplecsv.converter.ListConverter;
 import me.landmesser.simplecsv.annotation.CSVColumnName;
 import me.landmesser.simplecsv.annotation.CSVDateFormat;
 import me.landmesser.simplecsv.annotation.CSVUseConverter;
@@ -19,7 +21,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-class CSVEntry<T> {
+public class CSVEntry<T> {
 
   private final Class<T> type;
   private final String fieldName;

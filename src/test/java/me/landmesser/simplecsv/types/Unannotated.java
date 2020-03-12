@@ -1,11 +1,6 @@
 package me.landmesser.simplecsv.types;
 
-import me.landmesser.simplecsv.ListConverter;
-import me.landmesser.simplecsv.annotation.CSVUseConverter;
-
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
 
 public class Unannotated {
 

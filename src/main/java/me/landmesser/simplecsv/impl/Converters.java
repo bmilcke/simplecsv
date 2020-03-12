@@ -1,4 +1,4 @@
-package me.landmesser.simplecsv;
+package me.landmesser.simplecsv.impl;
 
 import me.landmesser.simplecsv.converter.BigDecimalConverter;
 import me.landmesser.simplecsv.converter.CSVConversionException;
@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-class Converters {
+public class Converters {
 
   private static final Map<Class<?>, Class<?>> PRIMITIVE_WRAPPERS =
     Stream.of(
