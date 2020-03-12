@@ -19,6 +19,7 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -69,12 +70,17 @@ class CSVWriterTest {
       LocalDate.of(2020, 3, 25),
       LocalTime.of(17, 23, 3, 15)));
     object.setOldSchoolDate(new Date(1449484352130L));
+    object.setDateList(Stream.of(
+      LocalDate.of(1970, 3, 2),
+      LocalDate.of(2004, 2, 29),
+      LocalDate.of(2020, 3, 25)
+    ).collect(Collectors.toList()));
 
     List<String> result = retrieveCSVString(object, Annotated.class,
       CSVFormat.EXCEL.withDelimiter(','), true);
     assertEquals(2, result.size());
-    assertEquals("Custom,Begin,End,Unannotated,Value,Checked,Old Date", result.get(0));
-    assertEquals("Test,25.03.2019,\"Mittwoch, 25. März 2020\",,\"42,12\",falsch,07.12.2015 10:32", result.get(1));
+    assertEquals("Custom,Begin,End,Unannotated,Value,Checked,Old Date,DateList", result.get(0));
+    assertEquals("Test,25.03.2019,\"Mittwoch, 25. März 2020\",,\"42,12\",falsch,07.12.2015 10:32,\"[1970-03-02,2004-02-29,2020-03-25]\"", result.get(1));
   }
 
   @Test
@@ -83,9 +89,9 @@ class CSVWriterTest {
 
     List<String> result = retrieveCSVString(object, Types.class, null, true);
     assertEquals(2, result.size());
-    assertEquals("String,PrimInt,PrimChar,PrimBoolean,Integer,Character,BoleanVal,BigDecimal,LocalTime,LocalDate,LocalDateTime,TestEnum,OldSchool",
+    assertEquals("String,PrimInt,PrimChar,PrimBoolean,Integer,Character,BoleanVal,BigDecimal,LocalTime,LocalDate,LocalDateTime,TestEnum,OldSchool,NumberList",
       result.get(0));
-    assertEquals(String.format(",0,\"%c\",false,,,,,,,,,", 0), result.get(1));
+    assertEquals(String.format(",0,\"%c\",false,,,,,,,,,,", 0), result.get(1));
 
     object.setString("");
     object.setPrimInt(2);
@@ -100,11 +106,16 @@ class CSVWriterTest {
     object.setLocalDateTime(LocalDateTime.of(2020, 2, 29, 17, 21, 44));
     object.setTestEnum(TestEnum.FOURTH);
     object.setOldSchool(new Date(1549984952130L));
+    object.setNumberList(Stream.of(
+      BigDecimal.valueOf(1),
+      BigDecimal.valueOf(-2),
+      BigDecimal.valueOf(3141, 3)
+    ).collect(Collectors.toList()));
 
     result = retrieveCSVString(object, Types.class, null, true);
     assertEquals(2, result.size());
-    assertEquals("String,PrimInt,PrimChar,PrimBoolean,Integer,Character,BoleanVal,BigDecimal,LocalTime,LocalDate,LocalDateTime,TestEnum,OldSchool", result.get(0));
-    assertEquals("\"\",2,ö,true,5,\"#\",false,10,04:31:07.213243654,2020-03-25,2020-02-29T17:21:44,FOURTH,2019-02-12T15:22:32.13Z[UTC]", result.get(1));
+    assertEquals("String,PrimInt,PrimChar,PrimBoolean,Integer,Character,BoleanVal,BigDecimal,LocalTime,LocalDate,LocalDateTime,TestEnum,OldSchool,NumberList", result.get(0));
+    assertEquals("\"\",2,ö,true,5,\"#\",false,10,04:31:07.213243654,2020-03-25,2020-02-29T17:21:44,FOURTH,2019-02-12T15:22:32.13Z[UTC],\"[1,-2,3.141]\"", result.get(1));
   }
 
   @Test
@@ -115,19 +126,19 @@ class CSVWriterTest {
 
     List<String> result = retrieveCSVString(object, Types.class, null, true);
     assertEquals(2, result.size());
-    assertEquals("A string with spaces,0,x,false,,,,,,,,,", result.get(1));
+    assertEquals("A string with spaces,0,x,false,,,,,,,,,,", result.get(1));
 
     object.setString("A string with spaces, and also commas");
 
     result = retrieveCSVString(object, Types.class, null, true);
     assertEquals(2, result.size());
-    assertEquals("\"A string with spaces, and also commas\",0,x,false,,,,,,,,,", result.get(1));
+    assertEquals("\"A string with spaces, and also commas\",0,x,false,,,,,,,,,,", result.get(1));
 
     object.setString("This one with \"");
 
     result = retrieveCSVString(object, Types.class, null, true);
     assertEquals(2, result.size());
-    assertEquals("\"This one with \"\"\",0,x,false,,,,,,,,,", result.get(1));
+    assertEquals("\"This one with \"\"\",0,x,false,,,,,,,,,,", result.get(1));
   }
 
   @Test

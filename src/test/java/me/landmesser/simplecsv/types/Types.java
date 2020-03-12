@@ -1,12 +1,15 @@
 package me.landmesser.simplecsv.types;
 
-import me.landmesser.simplecsv.annotation.CSVDateFormat;
+import me.landmesser.simplecsv.ListConverter;
+import me.landmesser.simplecsv.annotation.CSVUseConverter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Types {
 
@@ -27,6 +30,8 @@ public class Types {
   private TestEnum testEnum;
 
   private Date oldSchool;
+
+  private List<BigDecimal> numberList;
 
   public String getString() {
     return string;
@@ -134,5 +139,18 @@ public class Types {
 
   public void setOldSchool(Date oldSchool) {
     this.oldSchool = oldSchool;
+  }
+
+  public List<BigDecimal> getNumberList() {
+    return numberList;
+  }
+
+  public void setNumberList(List<BigDecimal> numberList) {
+    if (this.numberList == null) {
+      this.numberList = new ArrayList<>();
+    } else {
+      this.numberList.clear();
+    }
+    this.numberList.addAll(numberList);
   }
 }

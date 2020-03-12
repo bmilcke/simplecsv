@@ -1,5 +1,6 @@
 package me.landmesser.simplecsv.types;
 
+import me.landmesser.simplecsv.ListConverter;
 import me.landmesser.simplecsv.annotation.CSVColumnName;
 import me.landmesser.simplecsv.annotation.CSVDateFormat;
 import me.landmesser.simplecsv.annotation.CSVIgnore;
@@ -8,7 +9,9 @@ import me.landmesser.simplecsv.annotation.CSVUseConverters;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @CSVUseConverters({
   @CSVUseConverter(value = GermanBooleanConverter.class, forType = Boolean.class),
@@ -38,6 +41,8 @@ public class Annotated {
   @CSVColumnName("Old Date")
   @CSVDateFormat("dd.MM.yyyy HH:mm")
   private Date oldSchoolDate;
+
+  private List<LocalDate> dateList;
 
   public String getName() {
     return name;
@@ -101,5 +106,17 @@ public class Annotated {
 
   public void setOldSchoolDate(Date oldSchoolDate) {
     this.oldSchoolDate = oldSchoolDate;
+  }
+
+  public List<LocalDate> getDateList() {
+    return dateList;
+  }
+
+  public void setDateList(List<LocalDate> list) {
+    if(dateList == null) {
+      dateList = new ArrayList<>();
+    } else
+      dateList.clear();
+    dateList.addAll(list);
   }
 }

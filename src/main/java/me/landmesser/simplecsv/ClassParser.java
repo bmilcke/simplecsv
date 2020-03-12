@@ -4,10 +4,12 @@ import me.landmesser.simplecsv.annotation.CSVDefaultColumnName;
 import me.landmesser.simplecsv.annotation.CSVIgnore;
 import me.landmesser.simplecsv.annotation.CSVUseConverter;
 import me.landmesser.simplecsv.converter.CSVConversionException;
+import me.landmesser.simplecsv.converter.CSVConverter;
 import me.landmesser.simplecsv.exception.CSVException;
 import me.landmesser.simplecsv.util.StringUtils;
 import org.apache.commons.csv.CSVFormat;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -39,7 +41,7 @@ class ClassParser<T> {
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   protected List<CSVEntry> parseClass(Class<T> type) throws CSVException {
-    detectConverters(type);
+    detectClassLevelConverters(type);
     determineDefaultColumnStyle(type);
     return Arrays.stream(type.getDeclaredFields())
       .filter(this::isNotIgnored)
@@ -88,7 +90,7 @@ class ClassParser<T> {
       .findAny().isPresent();
   }
 
-  private void detectConverters(Class<T> type) throws CSVException {
+  private void detectClassLevelConverters(Class<T> type) throws CSVException {
     List<CSVUseConverter> annotations = Arrays.stream(type.getAnnotationsByType(CSVUseConverter.class))
       .collect(Collectors.toList());
     for (CSVUseConverter anno : annotations) {
@@ -96,8 +98,16 @@ class ClassParser<T> {
         if (anno.forType() == Void.class) {
           throw new CSVException("Class level annotation requires forType to be set");
         }
-        converters.setUntypedConverter(anno.forType(),
-          anno.value().getDeclaredConstructor().newInstance());
+        CSVConverter<?> converter = null;
+        for (Constructor<?> ctor : anno.value().getDeclaredConstructors()) {
+          if (ctor.getParameterCount() == 1 && ctor.getParameterTypes()[0] == Class.class) {
+            converter = (CSVConverter<?>)ctor.newInstance(type);
+          }
+        }
+        if (converter == null) {
+          converter = anno.value().getDeclaredConstructor().newInstance();
+        }
+        converters.setUntypedConverter(anno.forType(), converter);
       } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
         throw new CSVException("Error setting converter", e);
       }

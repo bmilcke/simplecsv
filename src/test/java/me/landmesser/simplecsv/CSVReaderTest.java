@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,6 +75,11 @@ class CSVReaderTest {
       assertEquals(LocalDateTime.of(2020, 1, 12, 22, 13, 2), t1.getLocalDateTime());
       assertEquals(TestEnum.THIRD, t1.getTestEnum());
       assertEquals(1549984952130L, t1.getOldSchool().getTime());
+      List<BigDecimal> expected = new ArrayList<>();
+      expected.add(BigDecimal.valueOf(312, 2));
+      expected.add(BigDecimal.valueOf(42));
+      expected.add(BigDecimal.valueOf(-212123, 3));
+      assertEquals(expected, t1.getNumberList());
     }
   }
 }

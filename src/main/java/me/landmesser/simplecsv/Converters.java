@@ -11,11 +11,15 @@ import me.landmesser.simplecsv.util.Pair;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.time.temporal.TemporalAccessor;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -103,9 +107,9 @@ class Converters {
       if (adaptedType.isInstance(result)) {
         return (T)result;
       }
-    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+    } catch (NoSuchMethodException e) {
       throw new CSVConversionException("No converter found for type " + type.getName(), e);
-    } catch (IllegalArgumentException e) {
+    } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
       throw new CSVConversionException("Value " + value + " could not be parsed for type" + type.getName(), e);
     }
     return null;

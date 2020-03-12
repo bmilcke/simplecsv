@@ -10,9 +10,13 @@ import me.landmesser.simplecsv.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 class CSVEntry<T> {
 
@@ -20,10 +24,19 @@ class CSVEntry<T> {
   private final String fieldName;
   private String name;
   private CSVConverter<T> converter;
+  private final Class<?> genericType;
 
   public CSVEntry(Class<T> type, Field field, ColumnNameStyle columnNameStyle) {
     this.type = Objects.requireNonNull(type);
     this.fieldName = Objects.requireNonNull(field).getName();
+    genericType = Optional.ofNullable(field.getGenericType())
+      .filter(ParameterizedType.class::isInstance)
+      .map(ParameterizedType.class::cast)
+      .map(ParameterizedType::getActualTypeArguments)
+      .filter(arg -> arg.length > 0)
+      .map(arg -> arg[0])
+      .filter(Class.class::isInstance)
+      .map(Class.class::cast).orElse(null);
     determineConverter(field);
     determineName(field, columnNameStyle);
     determineConverterclass(field);
@@ -39,6 +52,10 @@ class CSVEntry<T> {
 
   public Class<T> getType() {
     return type;
+  }
+
+  public Class<?> getGenericType() {
+    return genericType;
   }
 
   public String getFieldName() {
@@ -79,6 +96,11 @@ class CSVEntry<T> {
       .map(fmt ->
         (Date.class.isAssignableFrom(field.getType())) ? new CSVUtilDateConverter(fmt)
           : new CSVDateConverter(field.getType(), fmt)).orElse(null);
+    if (converter == null) {
+      if (List.class.isAssignableFrom(type) && genericType != null) {
+        converter = new ListConverter(genericType);
+      }
+    }
   }
 
   @SuppressWarnings("unchecked")
