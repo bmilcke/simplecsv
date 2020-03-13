@@ -15,13 +15,21 @@ import java.util.stream.Collectors;
 
 public class ListConverter<T> implements CSVConverter<List<T>> {
 
-  private final char delimStart = '[';
-  private final char delimEnd = ']';
+  private final char delimStart;
+  private final char delimEnd;
 
   private final Conversion conv = new Conversion();
   private final Class<T> elemClass;
 
   public ListConverter(Class<T> elemClass) {
+    this.elemClass = elemClass;
+    this.delimStart = '[';
+    this.delimEnd = ']';
+  }
+
+  public ListConverter(Class<T> elemClass, final char delimStart, final char delimEnd) {
+    this.delimStart = delimStart;
+    this.delimEnd = delimEnd;
     this.elemClass = elemClass;
   }
 

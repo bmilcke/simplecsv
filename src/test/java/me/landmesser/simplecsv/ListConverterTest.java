@@ -35,4 +35,13 @@ class ListConverterTest {
       TestEnum.FIRST, TestEnum.THIRD, TestEnum.SECOND, TestEnum.FIRST, TestEnum.FOURTH
     ).collect(Collectors.toList()), result);
   }
+
+  @Test
+  void delimiter() {
+    ListConverter<String> converter = new ListConverter<>(String.class, '(', ')');
+    String result = converter.convert(Stream.of(
+      "A","B","C"
+    ).collect(Collectors.toList()));
+    assertEquals("(A,B,C)", result);
+  }
 }
