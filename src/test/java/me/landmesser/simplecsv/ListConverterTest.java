@@ -1,9 +1,9 @@
 package me.landmesser.simplecsv;
 
-import me.landmesser.simplecsv.ListConverter;
 import me.landmesser.simplecsv.types.TestEnum;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,8 +40,26 @@ class ListConverterTest {
   void delimiter() {
     ListConverter<String> converter = new ListConverter<>(String.class, '(', ')');
     String result = converter.convert(Stream.of(
-      "A","B","C"
+      "A", "B", "C"
     ).collect(Collectors.toList()));
     assertEquals("(A,B,C)", result);
+  }
+
+  @Test
+  void nonSimpleTypeRoundtrip() {
+    ListConverter<LocalDate> localDateListConverter = new ListConverter<>(LocalDate.class);
+    List<LocalDate> valueList = Stream.of(
+      LocalDate.of(1985, 2, 3),
+      LocalDate.of(1975, 12, 6),
+      LocalDate.of(2020, 3, 13))
+      .collect(Collectors.toList());
+
+    String result = localDateListConverter.convert(
+      valueList);
+    assertEquals("[1985-02-03,1975-12-06,2020-03-13]", result);
+
+    List<LocalDate> roundtripResult = localDateListConverter.parse(result);
+    assertEquals(valueList, roundtripResult);
+
   }
 }
