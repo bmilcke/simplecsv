@@ -1,10 +1,5 @@
 package me.landmesser.simplecsv;
 
-import me.landmesser.simplecsv.exception.CSVException;
-import me.landmesser.simplecsv.exception.CSVParseException;
-import me.landmesser.simplecsv.exception.CSVWriteException;
-import me.landmesser.simplecsv.impl.CSVEntry;
-import me.landmesser.simplecsv.impl.ClassParser;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
@@ -30,8 +25,41 @@ public class CSVWriter<T> extends ClassParser<T> implements Closeable {
 
   private final CSVPrinter printer;
 
+  /**
+   * Creates a CSW Writer object with which you can export a stream of objets
+   * to an {@link Appendable} in CSV format.
+   * <p>
+   * This class implements {@link Closeable}, so you can use this class inside a
+   * try-with-resource block, like this:
+   * <p/>
+   * <pre>
+   *     Stream<MyClass> objects = ...;
+   *     try (StringWriter sw = new StringWriter();
+   *          CSVWriter<Annotated> writer = new CSVWriter<>(sw, MyClass.class,
+   *              CSVFormat.DEFAULT, &#47;* withHeaders *&#47; true )) {
+   *       writer.write(objects);
+   *       objects.forEach(System.out::println);
+   *     } catch (IOException e) {
+   *       e.printStackTrace();
+   *     }
+   * </pre>
+   * <p>
+   * Note, that you should not call the <code>withHeader</code> methods at the passed
+   * {@link CSVFormat} object, as those would compromise the generation of
+   * headers by parsing the underlying class <code>T</code>.
+   * </p>
+   *
+   * @param writer      an appendable object to which output will be written
+   * @param type        the type of the objects that should be exported. Note that all passed
+   *                    objects must have the same class.
+   * @param format      the format in which to export. The format object is from apache-commons csv.
+   *                    See {@link CSVFormat} for details.
+   * @param withHeaders Writes headers as first line when set to <code>true</code>.
+   * @throws CSVException if a problem occured creating the underlying apache-commons csv
+   *                      {@link CSVPrinter} object.
+   */
   public CSVWriter(Appendable writer, Class<T> type,
-    CSVFormat format, boolean withHeaders) throws CSVException, IOException {
+    CSVFormat format, boolean withHeaders) throws CSVException {
     super(type);
     if (format == null) {
       format = CSVFormat.DEFAULT;
@@ -39,9 +67,21 @@ public class CSVWriter<T> extends ClassParser<T> implements Closeable {
     if (withHeaders) {
       format = format.withHeader(retrieveHeaders().toArray(String[]::new));
     }
-    this.printer = new CSVPrinter(writer, format);
+    try {
+      this.printer = new CSVPrinter(writer, format);
+    } catch (IOException e) {
+      throw new CSVException("Could not create CSVPrinter", e);
+    }
   }
 
+  /**
+   * Writes the given stream of objects into the {@link Appendable} given
+   * in the constructor.
+   *
+   * @param objects a stream of objects to write to CSV.
+   * @throws CSVWriteException if at some point conversion or writing
+   *                           to the {@link Appendable} has problems.
+   */
   public void write(Stream<T> objects) throws CSVWriteException {
     objects.map(this::retrieveLine).map(Stream::toArray)
       .forEach(rec -> {
@@ -60,7 +100,7 @@ public class CSVWriter<T> extends ClassParser<T> implements Closeable {
 
   private Stream<String> retrieveHeaders() {
     return getEntries().stream()
-      .map(CSVEntry::getName);
+      .map(FieldEntry::getName);
   }
 
   private Stream<String> retrieveLine(T object) {
@@ -68,7 +108,7 @@ public class CSVWriter<T> extends ClassParser<T> implements Closeable {
       .map(entry -> evaluate(object, entry));
   }
 
-  private <R> String evaluate(T object, CSVEntry<R> entry) throws CSVParseException {
+  private <R> String evaluate(T object, FieldEntry<R> entry) throws CSVParseException {
     if (object != null) {
       try {
         Method method = getType().getDeclaredMethod(determineGetter(entry));

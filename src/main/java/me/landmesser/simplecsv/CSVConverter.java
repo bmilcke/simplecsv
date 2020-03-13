@@ -1,4 +1,4 @@
-package me.landmesser.simplecsv.converter;
+package me.landmesser.simplecsv;
 
 /**
  * Interface for implementing a converter for type <code>T</code>.

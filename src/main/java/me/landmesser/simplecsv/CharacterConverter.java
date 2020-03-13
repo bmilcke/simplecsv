@@ -1,4 +1,4 @@
-package me.landmesser.simplecsv.converter;
+package me.landmesser.simplecsv;
 
 public class CharacterConverter extends ToStringConverter<Character> {
   @Override

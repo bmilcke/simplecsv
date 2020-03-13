@@ -1,6 +1,6 @@
 package me.landmesser.simplecsv.types;
 
-import me.landmesser.simplecsv.converter.EnumConverter;
+import me.landmesser.simplecsv.EnumConverter;
 import me.landmesser.simplecsv.util.Pair;
 
 import java.util.stream.Stream;

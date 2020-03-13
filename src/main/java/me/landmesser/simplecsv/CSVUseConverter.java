@@ -1,6 +1,4 @@
-package me.landmesser.simplecsv.annotation;
-
-import me.landmesser.simplecsv.converter.CSVConverter;
+package me.landmesser.simplecsv;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;

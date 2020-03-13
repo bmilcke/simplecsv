@@ -1,7 +1,7 @@
 package me.landmesser.simplecsv.types;
 
-import me.landmesser.simplecsv.converter.CSVConversionException;
-import me.landmesser.simplecsv.converter.CSVConverter;
+import me.landmesser.simplecsv.CSVConversionException;
+import me.landmesser.simplecsv.CSVConverter;
 
 public class GermanBooleanConverter implements CSVConverter<Boolean> {
 

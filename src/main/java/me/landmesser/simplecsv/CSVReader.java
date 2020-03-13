@@ -1,9 +1,5 @@
 package me.landmesser.simplecsv;
 
-import me.landmesser.simplecsv.exception.CSVException;
-import me.landmesser.simplecsv.exception.CSVParseException;
-import me.landmesser.simplecsv.impl.CSVEntry;
-import me.landmesser.simplecsv.impl.ClassParser;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -25,6 +21,27 @@ import java.util.stream.StreamSupport;
  * The class of type <code>T</code> is parsed for annotations to
  * customize the behaviour of the parser.
  * </p>
+ * <p>
+ * This class implements {@link Closeable}, so you can use this class inside a
+ * try-with-resource block, like this:
+ * <p/>
+ * <pre>
+ *     try (InputStream inp = new FileInputStream("myfile.csv");
+ *          Reader stringReader = new InputStreamReader(inp);
+ *          CSVReader<MyClass> reader = new CSVReader<>(
+ *            stringReader, MyClass.class,
+ *            CSVFormat.RFC4180.withDelimiter(';').withFirstRecordAsHeader()))
+ *     {
+ *       reader.read().forEach(this::process);
+ *     } catch (IOException e) {
+ *       e.printStackTrace();
+ *     }
+ * </pre>
+ * <p>
+ * The method <code>process</code> in this example would process a single object.
+ * As a stream is used, this can save memory, unless you have to return a collection
+ * containing all objects read.
+ * </p>
  *
  * @param <T> the type of objects that should be created out of the csv input.
  */
@@ -38,6 +55,14 @@ public class CSVReader<T> extends ClassParser<T> implements Closeable {
     parser = new CSVParser(reader, format);
   }
 
+  /**
+   * Reads the content of the reader passed in the constructor.
+   * The objects found in the CSV-stream are returned as a stream, so
+   * they can be consumed in a memory-friendly way.
+   *
+   * @return a stream of parsed objects
+   * @throws CSVParseException if at some point parsing was unsuccessful.
+   */
   public Stream<T> read() throws CSVParseException {
     return StreamSupport.stream(parser.spliterator(), false)
       .map(this::readSingle);
@@ -69,7 +94,7 @@ public class CSVReader<T> extends ClassParser<T> implements Closeable {
     }
   }
 
-  private <R> void evaluate(T targetObject, String value, CSVEntry<R> entry) throws CSVParseException {
+  private <R> void evaluate(T targetObject, String value, FieldEntry<R> entry) throws CSVParseException {
     try {
       R converted;
       Class<R> entryType = entry.getType();
@@ -78,7 +103,6 @@ public class CSVReader<T> extends ClassParser<T> implements Closeable {
       } else {
         converted = parse(entryType, value);
       }
-      // TODO: workaround
       if (converted != null) {
         Method method = getType().getDeclaredMethod(determineSetter(entry), entry.getType());
         method.invoke(targetObject, converted);
@@ -89,5 +113,4 @@ public class CSVReader<T> extends ClassParser<T> implements Closeable {
       throw new CSVParseException("Could not invoke getter for field " + entry.getFieldName(), e);
     }
   }
-
 }

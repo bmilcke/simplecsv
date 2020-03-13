@@ -1,10 +1,5 @@
-package me.landmesser.simplecsv.converter;
+package me.landmesser.simplecsv;
 
-import me.landmesser.simplecsv.converter.CSVConversionException;
-import me.landmesser.simplecsv.converter.CSVConverter;
-import me.landmesser.simplecsv.exception.CSVParseException;
-import me.landmesser.simplecsv.exception.CSVWriteException;
-import me.landmesser.simplecsv.impl.Converters;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
@@ -23,7 +18,7 @@ public class ListConverter<T> implements CSVConverter<List<T>> {
   private final char delimStart = '[';
   private final char delimEnd = ']';
 
-  private final Converters conv = new Converters();
+  private final Conversion conv = new Conversion();
   private final Class<T> elemClass;
 
   public ListConverter(Class<T> elemClass) {

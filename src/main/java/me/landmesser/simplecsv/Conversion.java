@@ -1,12 +1,12 @@
-package me.landmesser.simplecsv.impl;
+package me.landmesser.simplecsv;
 
-import me.landmesser.simplecsv.converter.BigDecimalConverter;
-import me.landmesser.simplecsv.converter.CSVConversionException;
-import me.landmesser.simplecsv.converter.CSVConverter;
-import me.landmesser.simplecsv.converter.CharacterConverter;
-import me.landmesser.simplecsv.converter.IntegerConverter;
-import me.landmesser.simplecsv.converter.TemporalAccessorConverter;
-import me.landmesser.simplecsv.converter.UtilDateConverter;
+import me.landmesser.simplecsv.BigDecimalConverter;
+import me.landmesser.simplecsv.CSVConversionException;
+import me.landmesser.simplecsv.CSVConverter;
+import me.landmesser.simplecsv.CharacterConverter;
+import me.landmesser.simplecsv.IntegerConverter;
+import me.landmesser.simplecsv.TemporalAccessorConverter;
+import me.landmesser.simplecsv.UtilDateConverter;
 import me.landmesser.simplecsv.util.Pair;
 
 import java.lang.reflect.InvocationTargetException;
@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Converters {
+class Conversion {
 
   private static final Map<Class<?>, Class<?>> PRIMITIVE_WRAPPERS =
     Stream.of(
@@ -38,7 +38,7 @@ public class Converters {
 
   private final TemporalAccessorConverter taConverter = new TemporalAccessorConverter();
 
-  public Converters() {
+  public Conversion() {
     converters.put(Character.class, new CharacterConverter());
     converters.put(Integer.class, new IntegerConverter());
     converters.put(BigDecimal.class, new BigDecimalConverter());

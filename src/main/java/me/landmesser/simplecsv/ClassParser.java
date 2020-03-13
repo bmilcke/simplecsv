@@ -1,12 +1,5 @@
-package me.landmesser.simplecsv.impl;
+package me.landmesser.simplecsv;
 
-import me.landmesser.simplecsv.ColumnNameStyle;
-import me.landmesser.simplecsv.annotation.CSVDefaultColumnName;
-import me.landmesser.simplecsv.annotation.CSVIgnore;
-import me.landmesser.simplecsv.annotation.CSVUseConverter;
-import me.landmesser.simplecsv.converter.CSVConversionException;
-import me.landmesser.simplecsv.converter.CSVConverter;
-import me.landmesser.simplecsv.exception.CSVException;
 import me.landmesser.simplecsv.util.StringUtils;
 import org.apache.commons.csv.CSVFormat;
 
@@ -17,11 +10,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class ClassParser<T> {
+class ClassParser<T> {
 
-  private final Converters converters = new Converters();
+  private final Conversion conversion = new Conversion();
   private final Class<T> type;
-  private final List<CSVEntry> entries;
+  private final List<FieldEntry> entries;
 
   private CSVFormat format = CSVFormat.DEFAULT;
   private ColumnNameStyle columnNameStyle = ColumnNameStyle.CAPITALIZED;
@@ -40,28 +33,28 @@ public class ClassParser<T> {
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
-  protected List<CSVEntry> parseClass(Class<T> type) throws CSVException {
+  protected List<FieldEntry> parseClass(Class<T> type) throws CSVException {
     detectClassLevelConverters(type);
     determineDefaultColumnStyle(type);
     return Arrays.stream(type.getDeclaredFields())
       .filter(this::isNotIgnored)
-      .map(f -> new CSVEntry(f.getType(), f, columnNameStyle))
+      .map(f -> new FieldEntry(f.getType(), f, columnNameStyle))
       .collect(Collectors.toList());
   }
 
   protected String convert(Class<?> type, Object object) {
-    return converters.convert(type, object);
+    return conversion.convert(type, object);
   }
 
   protected <R> R parse(Class<R> type, String value) throws CSVConversionException {
-    return converters.parse(type, value);
+    return conversion.parse(type, value);
   }
 
-  protected String determineSetter(CSVEntry entry) {
+  protected String determineSetter(FieldEntry entry) {
     return "set" + StringUtils.capitalize(entry.getFieldName());
   }
 
-  protected String determineGetter(CSVEntry entry) {
+  protected String determineGetter(FieldEntry entry) {
     if (boolean.class.isAssignableFrom(entry.getType())) {
       return "is" + StringUtils.capitalize(entry.getFieldName());
     } else {
@@ -73,7 +66,7 @@ public class ClassParser<T> {
     return type;
   }
 
-  public List<CSVEntry> getEntries() {
+  public List<FieldEntry> getEntries() {
     return entries;
   }
 
@@ -99,7 +92,7 @@ public class ClassParser<T> {
           throw new CSVException("Class level annotation requires forType to be set");
         }
         CSVConverter<?> converter = anno.value().getDeclaredConstructor().newInstance();
-        converters.setUntypedConverter(anno.forType(), converter);
+        conversion.setUntypedConverter(anno.forType(), converter);
       } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
         throw new CSVException("Error setting converter", e);
       }

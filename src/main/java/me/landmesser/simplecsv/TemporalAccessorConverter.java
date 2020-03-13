@@ -1,4 +1,4 @@
-package me.landmesser.simplecsv.converter;
+package me.landmesser.simplecsv;
 
 import me.landmesser.simplecsv.util.Pair;
 

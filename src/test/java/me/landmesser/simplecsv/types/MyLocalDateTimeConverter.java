@@ -1,7 +1,7 @@
 package me.landmesser.simplecsv.types;
 
-import me.landmesser.simplecsv.converter.CSVConversionException;
-import me.landmesser.simplecsv.converter.CSVConverter;
+import me.landmesser.simplecsv.CSVConversionException;
+import me.landmesser.simplecsv.CSVConverter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

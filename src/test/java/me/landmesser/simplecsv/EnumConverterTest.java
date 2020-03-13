@@ -1,55 +1,64 @@
 package me.landmesser.simplecsv;
 
-import me.landmesser.simplecsv.types.EnumConverterContainer;
+import me.landmesser.simplecsv.CSVConversionException;
+import me.landmesser.simplecsv.EnumConverter;
 import me.landmesser.simplecsv.types.TestEnum;
-import org.apache.commons.csv.CSVFormat;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class EnumConverterTest {
 
-  @ParameterizedTest
-  @CsvSource({
-    "FIRST,One",
-    "SECOND,Two",
-    "THIRD,Three",
-    "FOURTH,Four"
-  })
-  void write(TestEnum enumVal, String expected) {
-    EnumConverterContainer object = new EnumConverterContainer();
-    object.setMyEnum(enumVal);
-    List<String> result = CSVWriterTest.retrieveCSVString(object, EnumConverterContainer.class,
-      CSVFormat.EXCEL, false);
-    assertNotNull(result);
-    assertEquals(1, result.size());
-    assertEquals(expected, result.get(0));
+  @Test
+  void convert() {
+    EnumConverter<TestEnum> conv = new EnumConverter<>(TestEnum.class);
+    assertNull(conv.convert(null));
+    assertEquals("FIRST", conv.convert(TestEnum.FIRST));
+    assertEquals("SECOND", conv.convert(TestEnum.SECOND));
+    assertEquals("THIRD", conv.convert(TestEnum.THIRD));
+    assertEquals("FOURTH", conv.convert(TestEnum.FOURTH));
   }
 
-  @ParameterizedTest
-  @CsvSource({
-    "FIRST,One",
-    "SECOND,Two",
-    "THIRD,Three",
-    "FOURTH,Four"
-  })
-  void read(TestEnum expected, String input) throws IOException {
-    try (Reader stringReader = new StringReader(input);
-         CSVReader<EnumConverterContainer> reader = new CSVReader<>(
-           stringReader, EnumConverterContainer.class,
-           CSVFormat.RFC4180)) {
-      List<EnumConverterContainer> result = reader.read().collect(Collectors.toList());
-      assertNotNull(result);
-      assertEquals(1, result.size());
-      assertEquals(expected, result.get(0).getMyEnum());
-    }
+  @Test
+  void parse() {
+    EnumConverter<TestEnum> conv = new EnumConverter<>(TestEnum.class);
+    assertNull(conv.parse(null));
+    assertEquals(TestEnum.FIRST, conv.parse("FIRST"));
+    assertEquals(TestEnum.SECOND, conv.parse("SECOND"));
+    assertEquals(TestEnum.THIRD, conv.parse("THIRD"));
+    assertEquals(TestEnum.FOURTH, conv.parse("FOURTH"));
+  }
+
+  @Test
+  void convertWithMapping() {
+    EnumConverter<TestEnum> conv = new EnumConverter<>(TestEnum.class, getMapping());
+    assertNull(conv.convert(null));
+    assertEquals("Erstens", conv.convert(TestEnum.FIRST));
+    assertEquals("SECOND", conv.convert(TestEnum.SECOND));
+    assertEquals("Drittens", conv.convert(TestEnum.THIRD));
+    assertEquals("FOURTH", conv.convert(TestEnum.FOURTH));
+  }
+
+  @Test
+  void parseWithMapping() {
+    EnumConverter<TestEnum> conv = new EnumConverter<>(TestEnum.class, getMapping());
+    assertNull(conv.parse(null));
+    assertEquals(TestEnum.FIRST, conv.parse("Erstens"));
+    assertThrows(CSVConversionException.class, () -> conv.parse("FIRST"));
+    assertEquals(TestEnum.SECOND, conv.parse("SECOND"));
+    assertEquals(TestEnum.THIRD, conv.parse("Drittens"));
+    assertEquals(TestEnum.FOURTH, conv.parse("FOURTH"));
+  }
+
+  private Map<TestEnum, String> getMapping() {
+    Map<TestEnum, String> mapping = new HashMap<>();
+    mapping.put(TestEnum.FIRST, "Erstens");
+    mapping.put(TestEnum.THIRD, "Drittens");
+    return mapping;
   }
 }

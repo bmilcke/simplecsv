@@ -1,4 +1,4 @@
-package me.landmesser.simplecsv.converter;
+package me.landmesser.simplecsv;
 
 abstract class ToStringConverter<T> implements CSVConverter<T> {
   @Override

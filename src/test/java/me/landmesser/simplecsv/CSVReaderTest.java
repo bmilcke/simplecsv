@@ -6,6 +6,7 @@ import me.landmesser.simplecsv.types.Unannotated;
 import org.apache.commons.csv.CSVFormat;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -32,8 +33,7 @@ class CSVReaderTest {
          Reader stringReader = new InputStreamReader(inp);
          CSVReader<Unannotated> reader = new CSVReader<>(
            stringReader, Unannotated.class,
-           CSVFormat.RFC4180.withDelimiter(',')
-             .withFirstRecordAsHeader().withSkipHeaderRecord())) {
+           CSVFormat.RFC4180.withDelimiter(',').withFirstRecordAsHeader().withSkipHeaderRecord())) {
       List<Unannotated> result = reader.read().collect(Collectors.toList());
       assertEquals(1, result.size());
 

@@ -1,4 +1,4 @@
-package me.landmesser.simplecsv.converter;
+package me.landmesser.simplecsv;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -7,12 +7,12 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
 import java.util.logging.Logger;
 
-public class CSVDateConverter<T extends TemporalAccessor> implements CSVConverter<TemporalAccessor> {
+class FormattedDateConverter<T extends TemporalAccessor> implements CSVConverter<TemporalAccessor> {
 
   private final Class<T> type;
   private final DateTimeFormatter formatter;
 
-  public CSVDateConverter(Class<T> type, String format) {
+  public FormattedDateConverter(Class<T> type, String format) {
     this.type = type;
     formatter = DateTimeFormatter.ofPattern(format);
   }

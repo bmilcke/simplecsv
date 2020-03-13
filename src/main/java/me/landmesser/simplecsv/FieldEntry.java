@@ -1,13 +1,5 @@
-package me.landmesser.simplecsv.impl;
+package me.landmesser.simplecsv;
 
-import me.landmesser.simplecsv.ColumnNameStyle;
-import me.landmesser.simplecsv.converter.ListConverter;
-import me.landmesser.simplecsv.annotation.CSVColumnName;
-import me.landmesser.simplecsv.annotation.CSVDateFormat;
-import me.landmesser.simplecsv.annotation.CSVUseConverter;
-import me.landmesser.simplecsv.converter.CSVConverter;
-import me.landmesser.simplecsv.converter.CSVDateConverter;
-import me.landmesser.simplecsv.converter.CSVUtilDateConverter;
 import me.landmesser.simplecsv.util.StringUtils;
 
 import java.lang.reflect.Field;
@@ -21,7 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class CSVEntry<T> {
+class FieldEntry<T> {
 
   private final Class<T> type;
   private final String fieldName;
@@ -30,7 +22,7 @@ public class CSVEntry<T> {
   private String name;
   private CSVConverter<T> converter;
 
-  public CSVEntry(Class<T> type, Field field, ColumnNameStyle columnNameStyle) {
+  public FieldEntry(Class<T> type, Field field, ColumnNameStyle columnNameStyle) {
     this.type = Objects.requireNonNull(type);
     this.fieldName = Objects.requireNonNull(field).getName();
     genericTypes = Optional.ofNullable(field.getGenericType())
@@ -102,7 +94,7 @@ public class CSVEntry<T> {
       .map(CSVDateFormat::value)
       .map(fmt ->
         (Date.class.isAssignableFrom(field.getType())) ? new CSVUtilDateConverter(fmt)
-          : new CSVDateConverter(field.getType(), fmt)).orElse(null);
+          : new FormattedDateConverter(field.getType(), fmt)).orElse(null);
     if (converter == null) {
       if (List.class.isAssignableFrom(type) && !genericTypes.isEmpty()) {
         converter = new ListConverter(genericTypes.get(0));

@@ -1,5 +1,6 @@
-package me.landmesser.simplecsv.converter;
+package me.landmesser.simplecsv;
 
+import me.landmesser.simplecsv.ListConverter;
 import me.landmesser.simplecsv.types.TestEnum;
 import org.junit.jupiter.api.Test;
 

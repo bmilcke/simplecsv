@@ -1,4 +1,4 @@
-package me.landmesser.simplecsv.exception;
+package me.landmesser.simplecsv;
 
 /**
  * Exception thrown when an error while writing the CSV output causes a problem.

@@ -1,10 +1,10 @@
 package me.landmesser.simplecsv.types;
 
-import me.landmesser.simplecsv.annotation.CSVColumnName;
-import me.landmesser.simplecsv.annotation.CSVDateFormat;
-import me.landmesser.simplecsv.annotation.CSVIgnore;
-import me.landmesser.simplecsv.annotation.CSVUseConverter;
-import me.landmesser.simplecsv.annotation.CSVUseConverters;
+import me.landmesser.simplecsv.CSVColumnName;
+import me.landmesser.simplecsv.CSVDateFormat;
+import me.landmesser.simplecsv.CSVIgnore;
+import me.landmesser.simplecsv.CSVUseConverter;
+import me.landmesser.simplecsv.CSVUseConverters;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

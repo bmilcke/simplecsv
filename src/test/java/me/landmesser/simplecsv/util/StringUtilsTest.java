@@ -1,6 +1,5 @@
-package me.landmesser.simplecsv;
+package me.landmesser.simplecsv.util;
 
-import me.landmesser.simplecsv.util.StringUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 

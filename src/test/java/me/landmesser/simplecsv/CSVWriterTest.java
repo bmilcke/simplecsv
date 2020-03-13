@@ -1,6 +1,5 @@
 package me.landmesser.simplecsv;
 
-import me.landmesser.simplecsv.exception.CSVException;
 import me.landmesser.simplecsv.types.Annotated;
 import me.landmesser.simplecsv.types.AnnotatedWithError;
 import me.landmesser.simplecsv.types.ColumnStyleUppercase;
