@@ -24,11 +24,11 @@ import java.util.stream.StreamSupport;
  * <p>
  * This class implements {@link Closeable}, so you can use this class inside a
  * try-with-resource block, like this:
- * <p/>
+ * </p>
  * <pre>
  *     try (InputStream inp = new FileInputStream("myfile.csv");
  *          Reader stringReader = new InputStreamReader(inp);
- *          CSVReader<MyClass> reader = new CSVReader<>(
+ *          CSVReader&lt;MyClass&gt; reader = new CSVReader&lt;&gt;(
  *            stringReader, MyClass.class,
  *            CSVFormat.RFC4180.withDelimiter(';').withFirstRecordAsHeader()))
  *     {

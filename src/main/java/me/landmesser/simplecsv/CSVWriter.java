@@ -31,11 +31,11 @@ public class CSVWriter<T> extends ClassParser<T> implements Closeable {
    * <p>
    * This class implements {@link Closeable}, so you can use this class inside a
    * try-with-resource block, like this:
-   * <p/>
+   * </p>
    * <pre>
-   *     Stream<MyClass> objects = ...;
+   *     Stream&lt;MyClass&gt; objects = ...;
    *     try (StringWriter sw = new StringWriter();
-   *          CSVWriter<Annotated> writer = new CSVWriter<>(sw, MyClass.class,
+   *          CSVWriter&lt;MyClass&gt; writer = new CSVWriter&lt;&gt;(sw, MyClass.class,
    *              CSVFormat.DEFAULT, &#47;* withHeaders *&#47; true )) {
    *       writer.write(objects);
    *       objects.forEach(System.out::println);
