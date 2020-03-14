@@ -10,6 +10,9 @@ semicolon. Thus the name CSV for **C**omma **S**eparated **V**alues. (see [Wikip
 This library bases upon [Commons CSV from Apache Commons][1]. In addition to the functionality of commons CSV, with
 simplecsv you can create DTO-like objects that describe the fields you want to export to CSV. 
 
+The [CSVWriter](src/main/java/me/landmesser/simplecsv/CSVWriter.java) and the [CSVReader](src/main/java/me/landmesser/simplecsv/CSVReader.java) 
+both work stream-based. This allows you to process large amounts of data without wasting a lot of memory.
+
 ## Adding simplecsv to your build
 
 You can add this library to your Maven-based project by adding this dependency to the `dependencies`-section 
@@ -23,70 +26,72 @@ of your `pom.xml`.
 </dependency>
 ```
 
-## Example
+## Usage
 
-Imagine, you want to export a CSV-file containing the fields `firstname`, `lastname`, `dateOfBirth` of a
-bunch of people in a database. You might have a larger entity object containig these fields among others.
+Especially when dealing with CSV files with a lot of columns, you may loose track. First, you send a bunch of strings 
+as headers to the writer and then the values are written by calling lots of getters of an object, maybe using conversion 
+routines to format. To make this easier to read and more cohesive, you can write a class containing all the
+fields you want to export in the order you want them to be exported. Take a look at this example. 
 
 ```java
-@Entity
 public class Person {
-  private String firstName;
-  private String lastName;
-  private LocalDate dateOfBirth;
-  private String customerId;
-  // more fields
-  // ...
-  // getters and setters
-  // ...
-}
-```
-
-Then you can write a DTO-object containig the fields you want to export to CSV.
-
-```java
-public class CsvEntity {
+  
   private String firstname;
+
   private String lastname;
+
+  @CSVIgnore
+  private String nickname;
+
   @CSVColumnName("Date of Birth")
   @CSVDateFormat("dd.MM.yyyy")
   private LocalDate dateOfBirth;
+
   // getters and setters
 }
 ```
 
-In this simple case, you can just copy the three fields from the entity to the DTO. However, if you have more fields
-it might help to use tools like [Mapstruct][3] to map the fields. You can then just export this DTO by using the
-following code. (Here a StringWriter is used for simplicity, but of course you will typically use some sort of Writer 
+You can just export objects of this type by using the following code. (Here a StringWriter is used for simplicity, but of course you will typically use some sort of Writer 
 that stores to a stream or file)
 
 ```java
 public exportToCsv(Stream<Person> employees) {
     try (StringWriter sw = new StringWriter();
          CSVWriter<CsvEntity> writer = new CSVWriter<>(sw, CsvEntity.class,
-             CSVFormat.RFC4180.withDelimiter(';'), true))) {
-      writer.write(employees.map(this::mapToCsvEntity));
+             CSVFormat.RFC4180.withDelimiter(';'), /* withHeaders */ true))) {
+      writer.write(employees);
       System.out.println(sw.toString());
     } catch (IOException ex) {
       logger.error("Could not write CSV file", ex);
     }
 }
 ```
- The method `mapToCsvEntity` in this example would create an object that contains all the fields for export to CSV. Of course, you could skip the mapping, if you want to export the Employee object itself. If there are fields in that object which should not be exported, you could annotate those with `@CSVIgnore`.
- 
- As you can see here, the export works stream-based, like in Apache Commons CSV. This means, you can
- save a lot of memory when storing large amounts of records.
+As you can see here, the export works stream-based, like in Apache Commons CSV. This means, you can save a lot of 
+memory when storing large amounts of records.
  
  The `CSVFormat` class is from Apache Commons CSV. With this you can specify the format, like `DEFAULT`, `EXCEL`, or
  `RFC4180`. It is also possible to define a delimiter and other things. The only thing you should not use is one of the
 `withHeader` methods, because that will be used internally to set the column headers found in the class of the objects
-to export, in this case `CsvEntity`.
+to export, in this case `Person`.
 
-In the example class `CsvEntity` you see two unannotated fields. Those will be exported as `Firstname` and `Lastname`,
-respectively. The third column will be exported as `Date of Birth`, which is configured with the annotation
-`CSVColumnName`. You can also configure other behaviour like the `CSVDateFormat`.
+So, what will be exported to CSV in this case. You might see something like this:
 
-Here is a list of Annotations
+```
+Firstname;Lastname;Date of Birth
+Jack;Smith;25.04.1980
+"Hans Werner";Hofstaedter;01.02.1974
+```
+
+The headers are generated out of the field names using the given strategy, which is capitalization of the fieldname. You
+can control this behaviour by adding an annotation of type [CSVDefaultColumnName](src/main/java/me/landmesser/simplecsv/CSVDefaultColumnName.java)
+at class level.
+
+The field `nickname` will not be exported, because it is annotated with [CSVIgnore](src/main/java/me/landmesser/simplecsv/CSVIgnore.java).
+
+Finally, the date of birth will get a custom header, as the annotation [CSVColumnName](src/main/java/me/landmesser/simplecsv/CSVColumnName.java)
+sets it. In addition, the date format is also specified, so it is not exported as the default ISO-format.
+
+Here is a list of all annotations available
 
 
 Annotation | Scope | Description
@@ -100,4 +105,3 @@ Annotation | Scope | Description
  
 [1]: https://commons.apache.org/proper/commons-csv/
 [2]: https://en.wikipedia.org/wiki/Comma-separated_values
-[3]: https://mapstruct.org/ 
