@@ -57,7 +57,7 @@ that stores to a stream or file)
 ```java
 public exportToCsv(Stream<Person> employees) {
     try (StringWriter sw = new StringWriter();
-         CSVWriter<CsvEntity> writer = new CSVWriter<>(sw, CsvEntity.class,
+         CSVWriter<Person> writer = new CSVWriter<>(sw, Person.class,
              CSVFormat.RFC4180.withDelimiter(';'), /* withHeaders */ true))) {
       writer.write(employees);
       System.out.println(sw.toString());
