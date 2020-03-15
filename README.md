@@ -66,7 +66,7 @@ public exportToCsv(Stream<Person> employees) {
     }
 }
 ```
-As you can see here, the export works stream-based, like in Apache Commons CSV. This means, you can save a lot of 
+As you can see here, the export works stream-based, like in Apache Commons CSV. This means, you can save 
 memory when storing large amounts of records.
  
  The `CSVFormat` class is from Apache Commons CSV. With this you can specify the format, like `DEFAULT`, `EXCEL`, or
