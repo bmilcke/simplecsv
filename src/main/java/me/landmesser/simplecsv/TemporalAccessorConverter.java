@@ -15,7 +15,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class TemporalAccessorConverter {
+public class TemporalAccessorConverter<T extends TemporalAccessor> implements CSVConverter<T> {
+
   private static final Map<Class<? extends TemporalAccessor>, DateTimeFormatter> DATE_TIME_FORMATTERS =
     Stream.of(
       Pair.of(LocalDate.class, DateTimeFormatter.ISO_LOCAL_DATE),
@@ -25,9 +26,26 @@ public class TemporalAccessorConverter {
       Pair.of(Instant.class, DateTimeFormatter.ISO_ZONED_DATE_TIME)
     ).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 
-  public <T extends TemporalAccessor> String convert(T value, Class<T> type) {
+  private final Class<T> type;
+  private final DateTimeFormatter customFormatter;
+
+  public TemporalAccessorConverter(Class<T> type) {
+    this.type = type;
+    customFormatter = null;
+  }
+
+  public TemporalAccessorConverter(Class<T> type, String dfPattern) {
+    this.type = type;
+    this.customFormatter = DateTimeFormatter.ofPattern(dfPattern);
+  }
+
+  @Override
+  public String convert(T value) {
     if (value == null) {
       return null;
+    }
+    if (customFormatter != null) {
+      return customFormatter.format(value);
     }
     if (DATE_TIME_FORMATTERS.containsKey(type)) {
       return DATE_TIME_FORMATTERS.get(type).format(value);
@@ -36,45 +54,28 @@ public class TemporalAccessorConverter {
     }
   }
 
-  public <T extends TemporalAccessor> String convertWithFormat(T value, Class<T> type, String datePattern) {
+  @Override
+  public T parse(String value) throws CSVConversionException {
     if (value == null) {
       return null;
     }
-    return DateTimeFormatter.ofPattern(datePattern).format(value);
-  }
-
-  public <T> T parse(String value, Class<T> type) throws CSVConversionException {
-    if (value == null) {
-      return null;
+    TemporalAccessor result;
+    if (customFormatter != null) {
+      result = customFormatter.parse(value);
+    } else if (DATE_TIME_FORMATTERS.containsKey(type)) {
+      result = DATE_TIME_FORMATTERS.get(type).parse(value);
+    } else {
+      throw new CSVConversionException("No DateFormatter found");
     }
     try {
-      if (TemporalAccessor.class.isAssignableFrom(type) && DATE_TIME_FORMATTERS.containsKey(type)) {
-        TemporalAccessor result = DATE_TIME_FORMATTERS.get(type).parse(value);
-        Method fromMethod = type.getDeclaredMethod("from", TemporalAccessor.class);
-        Object fromResult = fromMethod.invoke(null, result);
-        if (type.isInstance(fromResult)) {
-          return type.cast(fromResult);
-        }
-      }
-    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-      throw new CSVConversionException("Could not parse instant", e);
-    }
-    return null;
-  }
-
-  public <T extends TemporalAccessor> T parseWithFormat(String value, Class<T> type, String datePattern) throws CSVConversionException {
-    if (value == null) {
-      return null;
-    }
-    try {
-      Method fromMehtod = type.getDeclaredMethod("from", TemporalAccessor.class);
-      Object fromResult = fromMehtod.invoke(null, DateTimeFormatter.ofPattern(datePattern).parse(value));
+      Method fromMethod = type.getDeclaredMethod("from", TemporalAccessor.class);
+      Object fromResult = fromMethod.invoke(null, result);
       if (type.isInstance(fromResult)) {
         return type.cast(fromResult);
       }
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-      throw new CSVConversionException("Could not parse instant with given format", e);
+      throw new CSVConversionException("Could not parse instant", e);
     }
-    return null;
+    throw new CSVConversionException("Result has incorrect type");
   }
 }

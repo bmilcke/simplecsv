@@ -39,15 +39,8 @@ class ClassParser<T> {
     return Arrays.stream(type.getDeclaredFields())
       .filter(this::isNotIgnored)
       .map(f -> new FieldEntry(f.getType(), f, columnNameStyle))
+      .peek(conversion::fillConverterFor)
       .collect(Collectors.toList());
-  }
-
-  protected String convert(Class<?> type, Object object) {
-    return conversion.convert(type, object);
-  }
-
-  protected <R> R parse(Class<R> type, String value) throws CSVConversionException {
-    return conversion.parse(type, value);
   }
 
   protected String determineSetter(FieldEntry entry) {
@@ -92,7 +85,7 @@ class ClassParser<T> {
           throw new CSVException("Class level annotation requires forType to be set");
         }
         CSVConverter<?> converter = anno.value().getDeclaredConstructor().newInstance();
-        conversion.setUntypedConverter(anno.forType(), converter);
+        conversion.registerUntypedConverter(anno.forType(), converter);
       } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
         throw new CSVException("Error setting converter", e);
       }
@@ -102,6 +95,5 @@ class ClassParser<T> {
   private void determineDefaultColumnStyle(Class<T> type) {
     Arrays.stream(type.getAnnotationsByType(CSVDefaultColumnName.class))
       .findAny().map(CSVDefaultColumnName::value).ifPresent(this::setColumnNameStyle);
-
   }
 }

@@ -95,22 +95,19 @@ public class CSVReader<T> extends ClassParser<T> implements Closeable {
   }
 
   private <R> void evaluate(T targetObject, String value, FieldEntry<R> entry) throws CSVParseException {
+    R converted = null;
+    if (value != null && !value.isEmpty() && entry.getConverter() != null) {
+      converted = entry.getConverter().parse(value);
+    }
     try {
-      R converted;
-      Class<R> entryType = entry.getType();
-      if (entry.getConverter() != null) {
-        converted = entry.getConverter().parse(value);
-      } else {
-        converted = parse(entryType, value);
-      }
-      if (converted != null) {
-        Method method = getType().getDeclaredMethod(determineSetter(entry), entry.getType());
-        method.invoke(targetObject, converted);
-      }
+      Method method = getType().getDeclaredMethod(determineSetter(entry), entry.getType());
+      method.invoke(targetObject, converted);
+      return;
     } catch (NoSuchMethodException e) {
       Logger.getLogger(getClass().getSimpleName()).warning(("No setter found for " + entry.getFieldName()));
     } catch (IllegalAccessException | InvocationTargetException e) {
-      throw new CSVParseException("Could not invoke getter for field " + entry.getFieldName(), e);
+      throw new CSVParseException("Could not invoke setter for field " + entry.getFieldName(), e);
     }
+    throw new CSVParseException("Could not convert value");
   }
 }

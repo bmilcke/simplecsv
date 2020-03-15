@@ -65,6 +65,10 @@ class FieldEntry<T> {
     return converter;
   }
 
+  void setConverter(CSVConverter<T> converter) {
+    this.converter = converter;
+  }
+
   private void determineName(Field field, ColumnNameStyle columnNameStyle) {
     name = Arrays.stream(field.getAnnotationsByType(CSVColumnName.class))
       .findFirst()
@@ -93,13 +97,8 @@ class FieldEntry<T> {
       .findFirst()
       .map(CSVDateFormat::value)
       .map(fmt ->
-        (Date.class.isAssignableFrom(field.getType())) ? new CSVUtilDateConverter(fmt)
-          : new FormattedDateConverter(field.getType(), fmt)).orElse(null);
-    if (converter == null) {
-      if (List.class.isAssignableFrom(type) && !genericTypes.isEmpty()) {
-        converter = new ListConverter(genericTypes.get(0));
-      }
-    }
+        (Date.class.isAssignableFrom(field.getType())) ? new UtilDateConverter(fmt)
+          : new TemporalAccessorConverter(field.getType(), fmt)).orElse(null);
   }
 
   @SuppressWarnings("unchecked")

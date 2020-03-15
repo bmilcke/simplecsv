@@ -88,7 +88,7 @@ class CSVWriterTest {
 
     List<String> result = retrieveCSVString(object, Types.class, null, true);
     assertEquals(2, result.size());
-    assertEquals("String,PrimInt,PrimChar,PrimBoolean,Integer,Character,BoleanVal,BigDecimal,LocalTime,LocalDate,LocalDateTime,TestEnum,OldSchool,NumberList",
+    assertEquals("String,PrimInt,PrimChar,PrimBoolean,Integer,Character,BooleanVal,BigDecimal,LocalTime,LocalDate,LocalDateTime,TestEnum,OldSchool,NumberList",
       result.get(0));
     assertEquals(String.format(",0,\"%c\",false,,,,,,,,,,", 0), result.get(1));
 
@@ -113,7 +113,7 @@ class CSVWriterTest {
 
     result = retrieveCSVString(object, Types.class, null, true);
     assertEquals(2, result.size());
-    assertEquals("String,PrimInt,PrimChar,PrimBoolean,Integer,Character,BoleanVal,BigDecimal,LocalTime,LocalDate,LocalDateTime,TestEnum,OldSchool,NumberList", result.get(0));
+    assertEquals("String,PrimInt,PrimChar,PrimBoolean,Integer,Character,BooleanVal,BigDecimal,LocalTime,LocalDate,LocalDateTime,TestEnum,OldSchool,NumberList", result.get(0));
     assertEquals("\"\",2,ö,true,5,\"#\",false,10,04:31:07.213243654,2020-03-25,2020-02-29T17:21:44,FOURTH,2019-02-12T15:22:32.13Z[UTC],\"[1,-2,3.141]\"", result.get(1));
   }
 

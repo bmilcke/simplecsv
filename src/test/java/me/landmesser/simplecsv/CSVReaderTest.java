@@ -68,7 +68,7 @@ class CSVReaderTest {
       assertFalse(t1.isPrimBoolean());
       assertEquals(256, t1.getInteger());
       assertEquals('*', t1.getCharacter());
-      assertNull(t1.getBoleanVal());
+      assertNull(t1.getBooleanVal());
       assertEquals(BigDecimal.valueOf(32545, 2), t1.getBigDecimal());
       assertEquals(LocalTime.of(3, 22, 3, 100_000_000), t1.getLocalTime());
       assertEquals(LocalDate.of(2020, 2, 21), t1.getLocalDate());

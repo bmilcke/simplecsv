@@ -113,11 +113,9 @@ public class CSVWriter<T> extends ClassParser<T> implements Closeable {
       try {
         Method method = getType().getDeclaredMethod(determineGetter(entry));
         Object result = method.invoke(object);
-        Class<R> entryType = entry.getType();
         if (entry.getConverter() != null) {
-          return entry.getConverter().convert(entryType.cast(result));
+          return entry.getConverter().convert((R) result);
         }
-        return convert(entryType, result);
       } catch (NoSuchMethodException e) {
         Logger.getLogger(getClass().getSimpleName()).warning(("No getter found for " + entry.getFieldName()));
       } catch (IllegalAccessException | InvocationTargetException e) {

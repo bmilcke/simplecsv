@@ -13,24 +13,26 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ListConverter<T> implements CSVConverter<List<T>> {
+class ListConverter<T> implements CSVConverter<List<T>> {
 
   private final char delimStart;
   private final char delimEnd;
 
-  private final Conversion conv = new Conversion();
+  private final CSVConverter<T> elementConverter;
   private final Class<T> elemClass;
 
-  public ListConverter(Class<T> elemClass) {
+  public ListConverter(Class<T> elemClass, CSVConverter<T> elementConverter) {
     this.elemClass = elemClass;
+    this.elementConverter = elementConverter;
     this.delimStart = '[';
     this.delimEnd = ']';
   }
 
-  public ListConverter(Class<T> elemClass, final char delimStart, final char delimEnd) {
+  public ListConverter(Class<T> elemClass, CSVConverter<T> elementConverter, final char delimStart, final char delimEnd) {
+    this.elemClass = elemClass;
+    this.elementConverter = elementConverter;
     this.delimStart = delimStart;
     this.delimEnd = delimEnd;
-    this.elemClass = elemClass;
   }
 
   @Override
@@ -43,7 +45,7 @@ public class ListConverter<T> implements CSVConverter<List<T>> {
     }
     try (StringWriter sw = new StringWriter();
          CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT)) {
-      printer.printRecord(value.stream().map((T obj) -> conv.convert(elemClass, obj)).collect(Collectors.toList()));
+      printer.printRecord(value.stream().map(Object::toString).collect(Collectors.toList()));
       return delimStart + sw.toString().replaceAll("\\r?\\n", "") + delimEnd;
     } catch (IOException ex) {
       throw new CSVWriteException("Could not write collection content");
@@ -69,7 +71,7 @@ public class ListConverter<T> implements CSVConverter<List<T>> {
         throw new CSVParseException("Invalid number of records during parsing list");
       }
       for (String rec : records.get(0)) {
-        result.add(conv.parse(elemClass, rec));
+        result.add(elementConverter.parse(rec));
       }
       return result;
     } catch (IOException e) {

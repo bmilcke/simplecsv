@@ -5,9 +5,18 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+@SuppressWarnings("rawtypes, unchecked")
 public class UtilDateConverter implements CSVConverter<Date> {
 
-  private TemporalAccessorConverter taConverter = new TemporalAccessorConverter();
+  private final TemporalAccessorConverter<ZonedDateTime> taConverter;
+
+  public UtilDateConverter() {
+    this.taConverter = new TemporalAccessorConverter(ZonedDateTime.class);
+  }
+
+  public UtilDateConverter(String dfPattern) {
+    this.taConverter = new TemporalAccessorConverter(ZonedDateTime.class, dfPattern);
+  }
 
   @Override
   public String convert(Date value) {
@@ -15,7 +24,7 @@ public class UtilDateConverter implements CSVConverter<Date> {
       return null;
     }
     ZonedDateTime zdt = ZonedDateTime.ofInstant(value.toInstant(), ZoneId.of("UTC"));
-    return taConverter.convert(zdt, ZonedDateTime.class);
+    return taConverter.convert(zdt);
   }
 
   @Override
@@ -23,6 +32,6 @@ public class UtilDateConverter implements CSVConverter<Date> {
     if (value == null) {
       return null;
     }
-    return Date.from(taConverter.parse(value, Instant.class));
+    return Date.from(Instant.from(taConverter.parse(value)));
   }
 }

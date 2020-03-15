@@ -17,7 +17,7 @@ public class Types {
 
   private Integer integer;
   private Character character;
-  private Boolean boleanVal;
+  private Boolean booleanVal;
 
   private BigDecimal bigDecimal;
   private LocalTime localTime;
@@ -78,12 +78,12 @@ public class Types {
     this.character = character;
   }
 
-  public Boolean getBoleanVal() {
-    return boleanVal;
+  public Boolean getBooleanVal() {
+    return booleanVal;
   }
 
   public void setBooleanVal(Boolean boleanVal) {
-    this.boleanVal = boleanVal;
+    this.booleanVal = boleanVal;
   }
 
   public BigDecimal getBigDecimal() {

@@ -14,13 +14,13 @@ class ListConverterTest {
 
   @Test
   void convert() {
-    ListConverter<String> converter = new ListConverter<>(String.class);
+    ListConverter<String> converter = new ListConverter<>(String.class, new StringConverter());
     String result = converter.convert(Stream.of(
       "First", "Second, with comma", "Third; with semicolon", "Last"
     ).collect(Collectors.toList()));
     assertEquals("[First,\"Second, with comma\",Third; with semicolon,Last]", result);
 
-    ListConverter<Integer> intConverter = new ListConverter<>(Integer.class);
+    ListConverter<Integer> intConverter = new ListConverter<>(Integer.class, new IntegerConverter());
     String result2 = intConverter.convert(Stream.of(
       12, 0, 42, 17, 9, -5
     ).collect(Collectors.toList()));
@@ -29,7 +29,7 @@ class ListConverterTest {
 
   @Test
   void parse() {
-    ListConverter<TestEnum> converter = new ListConverter<>(TestEnum.class);
+    ListConverter<TestEnum> converter = new ListConverter<>(TestEnum.class, new EnumConverter<>(TestEnum.class));
     List<TestEnum> result = converter.parse("[FIRST,THIRD,SECOND,FIRST,FOURTH]");
     assertEquals(Stream.of(
       TestEnum.FIRST, TestEnum.THIRD, TestEnum.SECOND, TestEnum.FIRST, TestEnum.FOURTH
@@ -38,7 +38,7 @@ class ListConverterTest {
 
   @Test
   void delimiter() {
-    ListConverter<String> converter = new ListConverter<>(String.class, '(', ')');
+    ListConverter<String> converter = new ListConverter<>(String.class, new StringConverter(), '(', ')');
     String result = converter.convert(Stream.of(
       "A", "B", "C"
     ).collect(Collectors.toList()));
@@ -47,7 +47,7 @@ class ListConverterTest {
 
   @Test
   void nonSimpleTypeRoundtrip() {
-    ListConverter<LocalDate> localDateListConverter = new ListConverter<>(LocalDate.class);
+    ListConverter<LocalDate> localDateListConverter = new ListConverter<>(LocalDate.class, new TemporalAccessorConverter<>(LocalDate.class));
     List<LocalDate> valueList = Stream.of(
       LocalDate.of(1985, 2, 3),
       LocalDate.of(1975, 12, 6),
