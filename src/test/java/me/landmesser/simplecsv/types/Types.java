@@ -144,6 +144,8 @@ public class Types {
     } else {
       this.numberList.clear();
     }
-    this.numberList.addAll(numberList);
+    if (numberList != null) {
+      this.numberList.addAll(numberList);
+    }
   }
 }
