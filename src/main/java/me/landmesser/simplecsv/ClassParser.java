@@ -39,7 +39,7 @@ class ClassParser<T> {
     return Arrays.stream(type.getDeclaredFields())
       .filter(this::isNotIgnored)
       .map(f -> new FieldEntry(f.getType(), f, columnNameStyle))
-      .peek(conversion::fillConverterFor)
+      .map(f -> { conversion.fillConverterFor(f); return f; })
       .collect(Collectors.toList());
   }
 
