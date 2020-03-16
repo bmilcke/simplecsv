@@ -1,7 +1,5 @@
 package me.landmesser.simplecsv;
 
-import me.landmesser.simplecsv.CSVWriter;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

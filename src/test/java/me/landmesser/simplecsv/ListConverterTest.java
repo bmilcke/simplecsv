@@ -1,5 +1,6 @@
 package me.landmesser.simplecsv;
 
+import me.landmesser.simplecsv.types.GermanBooleanConverter;
 import me.landmesser.simplecsv.types.TestEnum;
 import org.junit.jupiter.api.Test;
 
@@ -9,6 +10,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ListConverterTest {
 
@@ -37,12 +40,26 @@ class ListConverterTest {
   }
 
   @Test
-  void delimiter() {
-    ListConverter<String> converter = new ListConverter<>(String.class, new StringConverter(), '(', ')');
+  void delimiterWrite() {
+    ListConverter<String> converter = new ListConverter<>(String.class, new StringConverter(), '(', ')', ';');
     String result = converter.convert(Stream.of(
       "A", "B", "C"
     ).collect(Collectors.toList()));
-    assertEquals("(A,B,C)", result);
+    assertEquals("(A;B;C)", result);
+  }
+
+  @Test
+  void delimiterParse() {
+    ListConverter<Boolean> converter = new ListConverter<>(Boolean.class, new GermanBooleanConverter(), '{', '}', '\t');
+    String csvText = "{wahr\twahr\tfalsch\twahr\tfalsch\tfalsch}";
+    List<Boolean> result = converter.parse(csvText);
+    assertEquals(6, result.size());
+    assertTrue(result.get(0));
+    assertTrue(result.get(1));
+    assertFalse(result.get(2));
+    assertTrue(result.get(3));
+    assertFalse(result.get(4));
+    assertFalse(result.get(5));
   }
 
   @Test

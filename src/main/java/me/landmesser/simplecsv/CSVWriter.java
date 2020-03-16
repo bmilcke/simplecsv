@@ -59,7 +59,7 @@ public class CSVWriter<T> extends ClassParser<T> implements Closeable {
    *                      {@link CSVPrinter} object.
    */
   public CSVWriter(Appendable writer, Class<T> type,
-    CSVFormat format, boolean withHeaders) throws CSVException {
+                   CSVFormat format, boolean withHeaders) throws CSVException {
     super(type);
     if (format == null) {
       format = CSVFormat.DEFAULT;

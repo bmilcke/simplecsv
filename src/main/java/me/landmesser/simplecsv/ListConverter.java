@@ -15,8 +15,9 @@ import java.util.stream.Collectors;
 
 class ListConverter<T> implements CSVConverter<List<T>> {
 
-  private final char delimStart;
-  private final char delimEnd;
+  private final char startChar;
+  private final char endChar;
+  private final char delimiter;
 
   private final CSVConverter<T> elementConverter;
   private final Class<T> elemClass;
@@ -24,15 +25,18 @@ class ListConverter<T> implements CSVConverter<List<T>> {
   public ListConverter(Class<T> elemClass, CSVConverter<T> elementConverter) {
     this.elemClass = elemClass;
     this.elementConverter = elementConverter;
-    this.delimStart = '[';
-    this.delimEnd = ']';
+    this.startChar = '[';
+    this.endChar = ']';
+    this.delimiter = ',';
   }
 
-  public ListConverter(Class<T> elemClass, CSVConverter<T> elementConverter, final char delimStart, final char delimEnd) {
+  public ListConverter(Class<T> elemClass, CSVConverter<T> elementConverter,
+                       final char startChar, final char endChar, final char delimiter) {
     this.elemClass = elemClass;
     this.elementConverter = elementConverter;
-    this.delimStart = delimStart;
-    this.delimEnd = delimEnd;
+    this.startChar = startChar;
+    this.endChar = endChar;
+    this.delimiter = delimiter;
   }
 
   @Override
@@ -44,9 +48,9 @@ class ListConverter<T> implements CSVConverter<List<T>> {
       return "";
     }
     try (StringWriter sw = new StringWriter();
-         CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT)) {
+         CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withDelimiter(delimiter))) {
       printer.printRecord(value.stream().map(Object::toString).collect(Collectors.toList()));
-      return delimStart + sw.toString().replaceAll("\\r?\\n", "") + delimEnd;
+      return startChar + sw.toString().replaceAll("\\r?\\n", "") + endChar;
     } catch (IOException ex) {
       throw new CSVWriteException("Could not write collection content");
     }
@@ -60,12 +64,12 @@ class ListConverter<T> implements CSVConverter<List<T>> {
     if (value.isEmpty()) {
       return Collections.emptyList();
     }
-    if (value.charAt(0) != delimStart || value.charAt(value.length() - 1) != delimEnd || value.length() < 2) {
+    if (value.charAt(0) != startChar || value.charAt(value.length() - 1) != endChar || value.length() < 2) {
       throw new CSVParseException("List delimiter not found");
     }
     List<T> result = new ArrayList<>();
     try (StringReader sr = new StringReader(value.substring(1, value.length() - 1));
-         CSVParser parser = new CSVParser(sr, CSVFormat.DEFAULT)) {
+         CSVParser parser = new CSVParser(sr, CSVFormat.DEFAULT.withDelimiter(delimiter))) {
       List<CSVRecord> records = parser.getRecords();
       if (records.size() != 1) {
         throw new CSVParseException("Invalid number of records during parsing list");
