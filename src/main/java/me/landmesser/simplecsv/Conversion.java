@@ -48,18 +48,21 @@ class Conversion {
     converters.put(type, converter);
   }
 
-  public <T> void fillConverterFor(FieldEntry<T> entry) {
+  /**
+   * Note: making FieldEntry generic breaks the calling code with Java 8.
+   */
+  public void fillConverterFor(FieldEntry entry) {
     // custom converter already set at entry
     if (entry.getConverter() != null) {
       return;
     }
 
-    Class<T> entryType = entry.getType();
+    Class entryType = entry.getType();
     if (!converters.containsKey(entryType)) {
       converters.put(entryType, getConverterForType(entryType, entry.getGenericTypes()));
     }
     if (converters.containsKey(entryType)) {
-      entry.setConverter((CSVConverter<T>) converters.get(entryType));
+      entry.setConverter(converters.get(entryType));
     } else {
       throw new CSVException("No converter found for type " + entryType.getName());
     }
