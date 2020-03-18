@@ -74,7 +74,7 @@ memory when storing large amounts of records.
 `withHeader` methods, because that will be used internally to set the column headers found in the class of the objects
 to export, in this case `Person`.
 
-So, what will be exported to CSV in this case. You might see something like this:
+So, what will be exported to CSV for this little example? You might see something like this:
 
 ```
 Firstname;Lastname;Date of Birth
@@ -82,7 +82,7 @@ Jack;Smith;25.04.1980
 "Hans Werner";Hofstaedter;01.02.1974
 ```
 
-The headers are generated out of the field names using the given strategy, which is capitalization of the fieldname. You
+The headers are generated out of the field names using the given strategy, which is capitalization of the fieldname by default. You
 can control this behaviour by adding an annotation of type [CSVDefaultColumnName](src/main/java/me/landmesser/simplecsv/CSVDefaultColumnName.java)
 at class level.
 
