@@ -100,7 +100,7 @@ public class CSVReader<T> extends ClassParser<T> implements Closeable {
       converted = entry.getConverter().parse(value);
     }
     try {
-      Method method = getType().getDeclaredMethod(determineSetter(entry), entry.getType());
+      Method method = getType().getMethod(determineSetter(entry), entry.getType());
       method.invoke(targetObject, converted);
       return;
     } catch (NoSuchMethodException e) {
