@@ -111,7 +111,7 @@ public class CSVWriter<T> extends ClassParser<T> implements Closeable {
   private <R> String evaluate(T object, FieldEntry<R> entry) throws CSVParseException {
     if (object != null) {
       try {
-        Method method = getType().getDeclaredMethod(determineGetter(entry));
+        Method method = getType().getMethod(determineGetter(entry));
         Object result = method.invoke(object);
         if (entry.getConverter() != null) {
           return entry.getConverter().convert((R) result);

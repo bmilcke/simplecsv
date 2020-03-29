@@ -5,6 +5,7 @@ import org.apache.commons.csv.CSVFormat;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,9 +19,18 @@ class ClassParser<T> {
 
   private CSVFormat format = CSVFormat.DEFAULT;
   private ColumnNameStyle columnNameStyle = ColumnNameStyle.CAPITALIZED;
+  private InheritanceStrategy inheritanceStrategy = InheritanceStrategy.NONE;
+  private int inheritanceDepth;
 
   public ClassParser(Class<T> type) throws CSVException {
     this.type = type;
+    entries = parseClass(type);
+  }
+
+  private ClassParser(Class<T> type, InheritanceStrategy inheritanceStrategy, int inheritanceDepth) throws CSVException {
+    this.type = type;
+    this.inheritanceStrategy = inheritanceStrategy;
+    this.inheritanceDepth = inheritanceDepth;
     entries = parseClass(type);
   }
 
@@ -36,11 +46,29 @@ class ClassParser<T> {
   protected List<FieldEntry> parseClass(Class<T> type) throws CSVException {
     detectClassLevelConverters(type);
     determineDefaultColumnStyle(type);
-    return Arrays.stream(type.getDeclaredFields())
+    determineInheritance(type);
+    List<FieldEntry> typefieldList = new ArrayList<>();
+    Class<? super T> superclass = type.getSuperclass();
+    if (inheritanceStrategy == InheritanceStrategy.BASE_FIRST && inheritanceDepth != 0) {
+      if (superclass != null && superclass != Object.class) {
+        ClassParser parser = new ClassParser(superclass, inheritanceStrategy,
+          inheritanceDepth == -1 ? -1 : inheritanceDepth - 1);
+        typefieldList.addAll(parser.entries);
+      }
+    }
+    Arrays.stream(type.getDeclaredFields())
       .filter(this::isNotIgnored)
       .map(f -> new FieldEntry(f.getType(), f, columnNameStyle))
       .peek(conversion::fillConverterFor)
-      .collect(Collectors.toList());
+      .collect(Collectors.toCollection(() -> typefieldList));
+    if (inheritanceStrategy == InheritanceStrategy.BASE_LAST && inheritanceDepth != 0) {
+      if (superclass != null && superclass != Object.class) {
+        ClassParser parser = new ClassParser(superclass, inheritanceStrategy,
+          inheritanceDepth == -1 ? -1 : inheritanceDepth - 1);
+        typefieldList.addAll(parser.entries);
+      }
+    }
+    return typefieldList;
   }
 
   protected String determineSetter(FieldEntry entry) {
@@ -96,4 +124,13 @@ class ClassParser<T> {
     Arrays.stream(type.getAnnotationsByType(CSVDefaultColumnName.class))
       .findAny().map(CSVDefaultColumnName::value).ifPresent(this::setColumnNameStyle);
   }
+
+  private void determineInheritance(Class<T> type) {
+    Arrays.stream(type.getAnnotationsByType(CSVInherit.class))
+      .findAny().ifPresent(csvInherit -> {
+      inheritanceStrategy = csvInherit.value();
+      inheritanceDepth = csvInherit.depth();
+    });
+  }
+
 }
