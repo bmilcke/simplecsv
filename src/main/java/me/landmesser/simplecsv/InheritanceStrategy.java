@@ -12,9 +12,5 @@ public enum InheritanceStrategy {
   /**
    * add base inherited members first, then the base ones
    */
-  BASE_LAST,
-  /**
-   * merge bease members accoring to the given list
-   */
-  AFTER_FIELD
+  BASE_LAST
 }
