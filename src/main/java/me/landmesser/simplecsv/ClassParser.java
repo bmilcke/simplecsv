@@ -1,5 +1,7 @@
 package me.landmesser.simplecsv;
 
+import me.landmesser.simplecsv.util.OrderDirection;
+import me.landmesser.simplecsv.util.OrderEntry;
 import me.landmesser.simplecsv.util.StringUtils;
 import org.apache.commons.csv.CSVFormat;
 
@@ -7,7 +9,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -19,6 +24,7 @@ class ClassParser<T> {
 
   private CSVFormat format = CSVFormat.DEFAULT;
   private ColumnNameStyle columnNameStyle = ColumnNameStyle.CAPITALIZED;
+
   private InheritanceStrategy inheritanceStrategy = InheritanceStrategy.NONE;
   private int inheritanceDepth;
 
@@ -48,13 +54,8 @@ class ClassParser<T> {
     determineDefaultColumnStyle(type);
     determineInheritance(type);
     List<FieldEntry> typefieldList = new ArrayList<>();
-    Class<? super T> superclass = type.getSuperclass();
     if (inheritanceStrategy == InheritanceStrategy.BASE_FIRST && inheritanceDepth != 0) {
-      if (superclass != null && superclass != Object.class) {
-        ClassParser parser = new ClassParser(superclass, inheritanceStrategy,
-          inheritanceDepth == -1 ? -1 : inheritanceDepth - 1);
-        typefieldList.addAll(parser.entries);
-      }
+      handleInheritance(type.getSuperclass(), typefieldList);
     }
     Arrays.stream(type.getDeclaredFields())
       .filter(this::isNotIgnored)
@@ -62,13 +63,65 @@ class ClassParser<T> {
       .peek(conversion::fillConverterFor)
       .collect(Collectors.toCollection(() -> typefieldList));
     if (inheritanceStrategy == InheritanceStrategy.BASE_LAST && inheritanceDepth != 0) {
-      if (superclass != null && superclass != Object.class) {
-        ClassParser parser = new ClassParser(superclass, inheritanceStrategy,
-          inheritanceDepth == -1 ? -1 : inheritanceDepth - 1);
-        typefieldList.addAll(parser.entries);
-      }
+      handleInheritance(type.getSuperclass(), typefieldList);
     }
+    handleOrderByField(typefieldList);
+    handleOrderConstraints(typefieldList);
     return typefieldList;
+  }
+
+  private void handleInheritance(Class<? super T> superclass, List<FieldEntry> typefieldList) {
+    if (superclass != null && superclass != Object.class) {
+      ClassParser parser = new ClassParser(superclass, inheritanceStrategy,
+        inheritanceDepth == -1 ? -1 : inheritanceDepth - 1);
+      typefieldList.addAll(parser.entries);
+    }
+  }
+
+  private void handleOrderByField(List<FieldEntry> typefieldList) {
+    Arrays.stream(type.getAnnotationsByType(CSVOrderFields.class))
+      .findAny().map(CSVOrderFields::value)
+      .map(clazz -> {
+        try {
+          return clazz.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+          return null;
+        }
+      })
+      .ifPresent(orderByField -> orderFields(typefieldList, orderByField));
+  }
+
+  private void orderFields(List<FieldEntry> typefieldList, OrderByField orderByField) {
+    final List<String> nameList = typefieldList.stream()
+      .map(FieldEntry::getName)
+      .collect(Collectors.toList());
+    final List<String> ordered = orderByField.orderedFields(nameList);
+    final Map<String, FieldEntry> entriesByKey = typefieldList.stream()
+      .collect(Collectors.toMap(FieldEntry::getName, Function.identity()));
+    if (!entriesByKey.keySet().equals(new HashSet<>(ordered))) {
+      throw new CSVException("Ordered Fields are incorrect");
+    }
+    typefieldList.clear();
+    typefieldList.addAll(ordered.stream().map(entriesByKey::get).collect(Collectors.toList()));
+  }
+
+  private void handleOrderConstraints(List<FieldEntry> typefieldList) {
+    List<OrderEntry> orderEntryList = Arrays.stream(type.getAnnotationsByType(CSVOrderConstraint.class))
+      .map(this::orderEntryByAnno)
+      .collect(Collectors.toList());
+    if (!orderEntryList.isEmpty()) {
+      orderFields(typefieldList, new PartialOrder(orderEntryList));
+    }
+  }
+
+  private OrderEntry orderEntryByAnno(CSVOrderConstraint constraint) {
+    if (!"".equals(constraint.before())) {
+      return new OrderEntry(constraint.value(), constraint.before(), OrderDirection.BEFORE);
+    }
+    if (!"".equals(constraint.after())) {
+      return new OrderEntry(constraint.value(), constraint.after(), OrderDirection.AFTER);
+    }
+    throw new CSVException("CSVOrderConstraint must have set either before or after");
   }
 
   protected String determineSetter(FieldEntry entry) {
@@ -132,5 +185,4 @@ class ClassParser<T> {
       inheritanceDepth = csvInherit.depth();
     });
   }
-
 }
