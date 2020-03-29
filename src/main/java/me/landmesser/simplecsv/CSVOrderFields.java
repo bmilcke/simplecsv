@@ -8,5 +8,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface CSVOrderFields {
-  Class<? extends OrderByField> value() default SortFields.class;
+  Class<? extends FieldOrder> value() default SortFieldOrder.class;
 }

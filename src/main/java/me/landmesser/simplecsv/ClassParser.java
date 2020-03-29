@@ -91,11 +91,11 @@ class ClassParser<T> {
       .ifPresent(orderByField -> orderFields(typefieldList, orderByField));
   }
 
-  private void orderFields(List<FieldEntry> typefieldList, OrderByField orderByField) {
+  private void orderFields(List<FieldEntry> typefieldList, FieldOrder fieldOrder) {
     final List<String> nameList = typefieldList.stream()
       .map(FieldEntry::getName)
       .collect(Collectors.toList());
-    final List<String> ordered = orderByField.orderedFields(nameList);
+    final List<String> ordered = fieldOrder.orderedFields(nameList);
     final Map<String, FieldEntry> entriesByKey = typefieldList.stream()
       .collect(Collectors.toMap(FieldEntry::getName, Function.identity()));
     if (!entriesByKey.keySet().equals(new HashSet<>(ordered))) {
@@ -110,16 +110,16 @@ class ClassParser<T> {
       .map(this::orderEntryByAnno)
       .collect(Collectors.toList());
     if (!orderEntryList.isEmpty()) {
-      orderFields(typefieldList, new PartialOrder(orderEntryList));
+      orderFields(typefieldList, new ConstraintFieldOrder(orderEntryList));
     }
   }
 
   private OrderEntry orderEntryByAnno(CSVOrderConstraint constraint) {
     if (!"".equals(constraint.before())) {
-      return new OrderEntry(constraint.value(), constraint.before(), OrderDirection.BEFORE);
+      return OrderEntry.ofBefore(constraint.value(), constraint.before());
     }
     if (!"".equals(constraint.after())) {
-      return new OrderEntry(constraint.value(), constraint.after(), OrderDirection.AFTER);
+      return OrderEntry.ofAfter(constraint.value(), constraint.after());
     }
     throw new CSVException("CSVOrderConstraint must have set either before or after");
   }

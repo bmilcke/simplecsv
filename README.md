@@ -101,6 +101,8 @@ Annotation | Scope | Description
 `@CSVDefaultColumnName` | class | selects a method to generate column names. See enum [`ColumnNameStyle`](src/main/java/me/landmesser/simplecsv/ColumnNameStyle.java) 
 `@CSVIgnore` | field | will not export this field at all
 `@CSVInherit` | class | determines, if members of base classes are included. See enum [`InheritanceStrategy`](src/main/java/me/landmesser/simplecsv/InheritanceStrategy.java) for strategies according the order of base members. You can also set a `depth` that deternines how far the inheritance chain should be followed.
+`@CSVOrderConstraint` | class | defines a constraint for one field being before or after another one. You pass the field to be moved and a field before or after which it should be moved. You can pass multiple constraints with the annotation `@CSVOrderConstraints`.  
+`@CSVOrderFields` | class | defines an ordering for the fields. You can pass a class of type [`FieldOrder`](src/main/java/me/landmesser/simplecsv/FieldOrder.java) for defining the ordering. Default is sorting ascending (see [`SortFieldOrder`](src/main/java/me/landmesser/simplecsv/SortFieldOrder.java))
 `@CSVUseConverter` | class | at class level multiple converters can be given using the annotation `@CSVUseConverters`. Those will be used for the given type, unless a converter is given at a field. Converters must implement the interface [`CSVConverter`](src/main/java/me/landmesser/simplecsv/CSVConverter.java)
 `@CSVUseConverter` | field | at field level the converter will only be used for the annotated field.
  

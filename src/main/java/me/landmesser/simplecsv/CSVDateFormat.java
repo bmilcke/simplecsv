@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Tells the {@link CSVWriter} to use the given format for a any
+ * Tells the {@link CSVWriter}  or {@link CSVReader} to use the given format for a any
  * date or date/time format derived from {@link java.time.temporal.TemporalAccessor}
  * implementing a method <code>format()</code> for conversion to String, and
  * <code>parse()</code> for parsing a String back into a date.

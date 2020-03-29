@@ -6,11 +6,22 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class PartialOrder implements OrderByField {
+/**
+ * Provides a simple facility for ordering fields.
+ * <p>
+ * The order entries given in the constructor are applied one after the other.
+ * This means that a field can move multiple times, and references are relative
+ * to the state when being applied.
+ * <p>
+ * For example if you have <code>"A", "B", "C"</code> and put <code>"C"</code>
+ * before <code>"A"</code> and then <code>"B"</code> before <code>"C"</code>,
+ * you will get <code>"B", "C", "A"</code>.
+ */
+public class ConstraintFieldOrder implements FieldOrder {
 
   private final List<OrderEntry> constraints;
 
-  public PartialOrder(List<OrderEntry> constraints) {
+  public ConstraintFieldOrder(List<OrderEntry> constraints) {
     this.constraints = Objects.requireNonNull(constraints);
   }
 
