@@ -9,9 +9,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -27,6 +29,7 @@ class ClassParser<T> {
 
   private InheritanceStrategy inheritanceStrategy = InheritanceStrategy.NONE;
   private int inheritanceDepth;
+  private Set<String> baseIgnoreFields = Collections.emptySet();
 
   public ClassParser(Class<T> type) throws CSVException {
     this.type = type;
@@ -74,7 +77,13 @@ class ClassParser<T> {
     if (superclass != null && superclass != Object.class) {
       ClassParser parser = new ClassParser(superclass, inheritanceStrategy,
         inheritanceDepth == -1 ? -1 : inheritanceDepth - 1);
-      typefieldList.addAll(parser.entries);
+      if (!baseIgnoreFields.isEmpty()) {
+        ((List<FieldEntry>) parser.entries).stream()
+          .filter(e -> !baseIgnoreFields.contains(e.getName()))
+          .collect(Collectors.toCollection(() -> typefieldList));
+      } else {
+        typefieldList.addAll(parser.entries);
+      }
     }
   }
 
@@ -183,6 +192,7 @@ class ClassParser<T> {
       .findAny().ifPresent(csvInherit -> {
       inheritanceStrategy = csvInherit.value();
       inheritanceDepth = csvInherit.depth();
+      baseIgnoreFields = Arrays.stream(csvInherit.ignore().split(",")).collect(Collectors.toSet());
     });
   }
 }

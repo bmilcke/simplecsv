@@ -4,6 +4,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 
 /**
  * If given, the fields from the base classes are exported in addition
@@ -18,6 +19,9 @@ import java.lang.annotation.Target;
  * in te hierarchy should be visited. Again, if in a base class this annotation
  * is also present with a different depth, it will be overridden. A depth of -1
  * means all predecessors until {@link Object} ist reached.
+ * <p>
+ * With <code>ignore</code> you can pass a comma-separated list of base class
+ * members that should not be imported.
  */
 @Retention(value = RetentionPolicy.RUNTIME)
 @Target(value = ElementType.TYPE)
@@ -25,4 +29,6 @@ public @interface CSVInherit {
   InheritanceStrategy value() default InheritanceStrategy.BASE_FIRST;
 
   int depth() default -1;
+
+  String ignore() default "";
 }
