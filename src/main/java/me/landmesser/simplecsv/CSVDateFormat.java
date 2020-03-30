@@ -10,10 +10,11 @@ import java.lang.annotation.Target;
  * date or date/time format derived from {@link java.time.temporal.TemporalAccessor}
  * implementing a method <code>format()</code> for conversion to String, and
  * <code>parse()</code> for parsing a String back into a date.
+ * <p>
+ * An old-school {@link java.util.Date} is also supported.
  *
  * <p>
  * For the formatting syntax see {@link java.time.format.DateTimeFormatter}
- * </p>
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

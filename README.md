@@ -97,7 +97,7 @@ Here is a list of all annotations available
 Annotation | Scope | Description
 -----------|-------|------------
 `@CSVColumnName` | field | sets a name that differs from the generated one
-`@CSVDateFormat` | field | sets a date format of a `java.time.TemporalAccessor` like `LocalDate` or `LocalDateTime`
+`@CSVDateFormat` | field | sets a date format of a `java.time.TemporalAccessor` like `LocalDate` or `LocalDateTime` or an old-school `java.util.Date`
 `@CSVDefaultColumnName` | class | selects a method to generate column names. See enum [`ColumnNameStyle`](src/main/java/me/landmesser/simplecsv/ColumnNameStyle.java) 
 `@CSVIgnore` | field | will not export this field at all
 `@CSVInherit` | class | determines, if members of base classes are included. See enum [`InheritanceStrategy`](src/main/java/me/landmesser/simplecsv/InheritanceStrategy.java) for strategies according the order of base members. You can also set a `depth` that deternines how far the inheritance chain should be followed.
