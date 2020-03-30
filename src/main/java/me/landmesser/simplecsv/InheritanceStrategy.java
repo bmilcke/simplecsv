@@ -10,7 +10,7 @@ public enum InheritanceStrategy {
    */
   BASE_FIRST,
   /**
-   * add base inherited members first, then the base ones
+   * add inherited members first, then the base ones
    */
   BASE_LAST
 }
