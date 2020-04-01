@@ -2,6 +2,7 @@
 
 [![Latest release](https://img.shields.io/github/release/bmilcke/simplecsv.svg)](https://github.com/bmilcke/simplecsv/releases/latest)
 ![Java CI](https://github.com/bmilcke/simplecsv/workflows/Java%20CI/badge.svg)
+[![Maven Central](https://img.shields.io/maven-central/v/me.landmesser.simplecsv/simplecsv.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22me.landmesser.simplecsv%22%20AND%20a:%22simplecsv%22)
 
 The goal of this library is to enable you to create and parse CSV-files (or streams) easily. CSV is a simple
 data format which puts values into a line of text separated by a delimiter, which is typically a comma or
