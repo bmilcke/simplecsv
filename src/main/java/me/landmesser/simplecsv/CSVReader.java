@@ -102,12 +102,10 @@ public class CSVReader<T> extends ClassParser<T> implements Closeable {
     try {
       Method method = getType().getMethod(determineSetter(entry), entry.getType());
       method.invoke(targetObject, converted);
-      return;
     } catch (NoSuchMethodException e) {
       Logger.getLogger(getClass().getSimpleName()).warning(("No setter found for " + entry.getFieldName()));
     } catch (IllegalAccessException | InvocationTargetException e) {
       throw new CSVParseException("Could not invoke setter for field " + entry.getFieldName(), e);
     }
-    throw new CSVParseException("Could not convert value");
   }
 }

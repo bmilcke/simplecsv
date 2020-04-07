@@ -7,6 +7,7 @@ import org.apache.commons.csv.CSVFormat;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,13 +32,16 @@ class ClassParser<T> {
   private int inheritanceDepth;
   private Set<String> baseIgnoreFields = Collections.emptySet();
 
+  private ExportImportStrategy exportImportStrategy = ExportImportStrategy.ALL;
+
   public ClassParser(Class<T> type) throws CSVException {
     this.type = type;
     entries = parseClass(type);
   }
 
-  private ClassParser(Class<T> type, InheritanceStrategy inheritanceStrategy, int inheritanceDepth) throws CSVException {
+  private ClassParser(Class<T> type, ExportImportStrategy exportImportStrategy, InheritanceStrategy inheritanceStrategy, int inheritanceDepth) throws CSVException {
     this.type = type;
+    this.exportImportStrategy = exportImportStrategy;
     this.inheritanceStrategy = inheritanceStrategy;
     this.inheritanceDepth = inheritanceDepth;
     entries = parseClass(type);
@@ -56,6 +60,7 @@ class ClassParser<T> {
     detectClassLevelConverters(type);
     determineDefaultColumnStyle(type);
     determineInheritance(type);
+    determineExportImportStrategy(type);
     List<FieldEntry> typefieldList = new ArrayList<>();
     if (inheritanceStrategy == InheritanceStrategy.BASE_FIRST && inheritanceDepth != 0) {
       handleInheritance(type.getSuperclass(), typefieldList);
@@ -63,6 +68,7 @@ class ClassParser<T> {
     Arrays.stream(type.getDeclaredFields())
       .filter(this::isNotIgnored)
       .map(f -> new FieldEntry(f.getType(), f, columnNameStyle))
+      .filter(this::checkExportImportStrategy)
       .peek(conversion::fillConverterFor)
       .collect(Collectors.toCollection(() -> typefieldList));
     if (inheritanceStrategy == InheritanceStrategy.BASE_LAST && inheritanceDepth != 0) {
@@ -73,9 +79,32 @@ class ClassParser<T> {
     return typefieldList;
   }
 
+  private boolean checkExportImportStrategy(FieldEntry entry) {
+    switch (exportImportStrategy) {
+    case ALL:
+        return true;
+      case WITH_GETTERS:
+        try {
+          getType().getMethod(determineGetter(entry));
+        } catch (NoSuchMethodException e) {
+          return false;
+        }
+        return true;
+      case WITH_GETTERS_AND_SETTERS:
+        try {
+          getType().getMethod(determineGetter(entry));
+          getType().getMethod(determineSetter(entry), entry.getType());
+        } catch (NoSuchMethodException e) {
+          return false;
+        }
+        return true;
+    }
+    return false;
+  }
+
   private void handleInheritance(Class<? super T> superclass, List<FieldEntry> typefieldList) {
     if (superclass != null && superclass != Object.class) {
-      ClassParser parser = new ClassParser(superclass, inheritanceStrategy,
+      ClassParser parser = new ClassParser(superclass, exportImportStrategy, inheritanceStrategy,
         inheritanceDepth == -1 ? -1 : inheritanceDepth - 1);
       if (!baseIgnoreFields.isEmpty()) {
         ((List<FieldEntry>) parser.entries).stream()
@@ -194,5 +223,10 @@ class ClassParser<T> {
       inheritanceDepth = csvInherit.depth();
       baseIgnoreFields = Arrays.stream(csvInherit.ignore().split(",")).collect(Collectors.toSet());
     });
+  }
+
+  private void determineExportImportStrategy(Class<T> type) {
+    Arrays.stream(type.getAnnotationsByType(CSVExportImportStrategy.class))
+      .findAny().ifPresent(strat -> exportImportStrategy = strat.value());
   }
 }

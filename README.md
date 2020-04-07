@@ -99,7 +99,8 @@ Annotation | Scope | Description
 -----------|-------|------------
 `@CSVColumnName` | field | sets a name that differs from the generated one
 `@CSVDateFormat` | field | sets a date format of a `java.time.TemporalAccessor` like `LocalDate` or `LocalDateTime` or an old-school `java.util.Date`
-`@CSVDefaultColumnName` | class | selects a method to generate column names. See enum [`ColumnNameStyle`](src/main/java/me/landmesser/simplecsv/ColumnNameStyle.java) 
+`@CSVDefaultColumnName` | class | selects a method to generate column names. See enum [`ColumnNameStyle`](src/main/java/me/landmesser/simplecsv/ColumnNameStyle.java)
+`CSVExportImportStrategy` | class | determines if all fields, or only those with a valid getter or getter and setter are to be exported. See enum [`ExportImportStrategy`](src/main/java/me/landmesser/simplecsv/ExportImportStrategy.java).
 `@CSVIgnore` | field | will not export this field at all
 `@CSVInherit` | class | determines, if members of base classes are included. See enum [`InheritanceStrategy`](src/main/java/me/landmesser/simplecsv/InheritanceStrategy.java) for strategies according the order of base members. You can also set a `depth` that deternines how far the inheritance chain should be followed.
 `@CSVOrderConstraint` | class | defines a constraint for one field being before or after another one. You pass the field to be moved and a field before or after which it should be moved. You can pass multiple constraints with the annotation `@CSVOrderConstraints`.  
