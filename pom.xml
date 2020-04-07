@@ -5,7 +5,7 @@
   <groupId>me.landmesser.simplecsv</groupId>
   <artifactId>simplecsv</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
 
   <name>${project.groupId}:${project.artifactId}</name>
   <description>Module that allows exporting Java beans into CSV format. Configuration
@@ -34,7 +34,7 @@
     <connection>scm:git:https://github.com/bmilcke/simplecsv.git</connection>
     <developerConnection>scm:git:git@github.com:bmilcke/simplecsv.git</developerConnection>
     <url>https://github.com/bmilcke/simplecsv</url>
-    <tag>HEAD</tag>
+    <tag>v1.0</tag>
   </scm>
   <ciManagement>
     <system>GitHub Workflow</system>
