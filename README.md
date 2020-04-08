@@ -23,7 +23,7 @@ of your `pom.xml`.
 <dependency>
   <groupId>me.landmesser</groupId>
   <artifactId>simplecsv</artifactId>
-  <version>0.4</version>
+  <version>1.0</version>
 </dependency>
 ```
 
