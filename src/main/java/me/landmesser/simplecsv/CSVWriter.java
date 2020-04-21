@@ -26,7 +26,7 @@ public class CSVWriter<T> extends ClassParser<T> implements Closeable {
   private final CSVPrinter printer;
 
   /**
-   * Creates a CSW Writer object with which you can export a stream of objets
+   * Creates a CSW Writer object with which you can export a stream of objects
    * to an {@link Appendable} in CSV format.
    * <p>
    * This class implements {@link Closeable}, so you can use this class inside a
@@ -55,7 +55,7 @@ public class CSVWriter<T> extends ClassParser<T> implements Closeable {
    * @param format      the format in which to export. The format object is from apache-commons csv.
    *                    See {@link CSVFormat} for details.
    * @param withHeaders Writes headers as first line when set to <code>true</code>.
-   * @throws CSVException if a problem occured creating the underlying apache-commons csv
+   * @throws CSVException if a problem occurred creating the underlying apache-commons csv
    *                      {@link CSVPrinter} object.
    */
   public CSVWriter(Appendable writer, Class<T> type,

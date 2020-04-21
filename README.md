@@ -6,7 +6,7 @@
 
 The goal of this library is to enable you to create and parse CSV-files (or streams) easily. CSV is a simple
 data format which puts values into a line of text separated by a delimiter, which is typically a comma or
-semicolon. Thus the name CSV for **C**omma **S**eparated **V**alues. (see [Wikipedia][2])
+semicolon. Thus, the name CSV for **C**omma **S**eparated **V**alues. (see [Wikipedia][2])
 
 This library bases upon [Commons CSV from Apache Commons][1]. In addition to the functionality of commons CSV, with
 simplecsv you can create DTO-like objects that describe the fields you want to export to CSV. 
@@ -29,7 +29,7 @@ of your `pom.xml`.
 
 ## Usage
 
-Especially when dealing with CSV files with a lot of columns, you may loose track. First, you send a bunch of strings 
+Especially when dealing with CSV files with a lot of columns, you may lose track. First, you send a bunch of strings 
 as headers to the writer and then the values are written by calling lots of getters of an object, maybe using conversion 
 routines to format. To make this easier to read and more cohesive, you can write a class containing all the
 fields you want to export in the order you want them to be exported. Take a look at this example. 
@@ -102,7 +102,7 @@ Annotation | Scope | Description
 `@CSVDefaultColumnName` | class | selects a method to generate column names. See enum [`ColumnNameStyle`](src/main/java/me/landmesser/simplecsv/ColumnNameStyle.java)
 `CSVExportImportStrategy` | class | determines if all fields, or only those with a valid getter or getter and setter are to be exported. See enum [`ExportImportStrategy`](src/main/java/me/landmesser/simplecsv/ExportImportStrategy.java).
 `@CSVIgnore` | field | will not export this field at all
-`@CSVInherit` | class | determines, if members of base classes are included. See enum [`InheritanceStrategy`](src/main/java/me/landmesser/simplecsv/InheritanceStrategy.java) for strategies according the order of base members. You can also set a `depth` that deternines how far the inheritance chain should be followed.
+`@CSVInherit` | class | determines, if members of base classes are included. See enum [`InheritanceStrategy`](src/main/java/me/landmesser/simplecsv/InheritanceStrategy.java) for strategies according the order of base members. You can also set a `depth` that determines how far the inheritance chain should be followed.
 `@CSVOrderConstraint` | class | defines a constraint for one field being before or after another one. You pass the field to be moved and a field before or after which it should be moved. You can pass multiple constraints with the annotation `@CSVOrderConstraints`.  
 `@CSVOrderFields` | class | defines an ordering for the fields. You can pass a class of type [`FieldOrder`](src/main/java/me/landmesser/simplecsv/FieldOrder.java) for defining the ordering. Default is sorting ascending (see [`SortFieldOrder`](src/main/java/me/landmesser/simplecsv/SortFieldOrder.java))
 `@CSVUseConverter` | class | at class level multiple converters can be given using the annotation `@CSVUseConverters`. Those will be used for the given type, unless a converter is given at a field. Converters must implement the interface [`CSVConverter`](src/main/java/me/landmesser/simplecsv/CSVConverter.java)

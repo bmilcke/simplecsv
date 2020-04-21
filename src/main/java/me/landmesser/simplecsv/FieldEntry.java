@@ -25,7 +25,7 @@ class FieldEntry<T> {
   public FieldEntry(Class<T> type, Field field, ColumnNameStyle columnNameStyle) {
     this.type = Objects.requireNonNull(type);
     this.fieldName = Objects.requireNonNull(field).getName();
-    genericTypes = Optional.ofNullable(field.getGenericType())
+    genericTypes = Optional.of(field.getGenericType())
       .filter(ParameterizedType.class::isInstance)
       .map(ParameterizedType.class::cast)
       .map(ParameterizedType::getActualTypeArguments)

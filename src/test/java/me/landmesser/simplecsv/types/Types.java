@@ -82,8 +82,8 @@ public class Types {
     return booleanVal;
   }
 
-  public void setBooleanVal(Boolean boleanVal) {
-    this.booleanVal = boleanVal;
+  public void setBooleanVal(Boolean booleanVal) {
+    this.booleanVal = booleanVal;
   }
 
   public BigDecimal getBigDecimal() {

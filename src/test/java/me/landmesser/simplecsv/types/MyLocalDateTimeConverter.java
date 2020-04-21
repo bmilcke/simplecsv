@@ -11,7 +11,7 @@ import java.util.Locale;
 
 public class MyLocalDateTimeConverter implements CSVConverter<LocalDateTime> {
 
-  private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
+  private final DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
     .withLocale(Locale.GERMAN);
 
   @Override
