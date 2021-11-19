@@ -59,7 +59,7 @@ that stores to a stream or file)
 public exportToCsv(Stream<Person> employees) {
     try (StringWriter sw = new StringWriter();
          CSVWriter<Person> writer = new CSVWriter<>(sw, Person.class,
-             CSVFormat.RFC4180.withDelimiter(';'), /* withHeaders */ true))) {
+             CSVFormat.RFC4180.withDelimiter(';'), /* withHeaders */ true)) {
       writer.write(employees);
       System.out.println(sw.toString());
     } catch (IOException ex) {
