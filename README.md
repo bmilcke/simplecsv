@@ -61,7 +61,7 @@ public exportToCsv(Stream<Person> employees) {
          CSVWriter<Person> writer = new CSVWriter<>(sw, Person.class,
              CSVFormat.RFC4180.withDelimiter(';'), /* withHeaders */ true)) {
       writer.write(employees);
-      System.out.println(sw.toString());
+      System.out.println(sw);
     } catch (IOException ex) {
       logger.error("Could not write CSV file", ex);
     }
