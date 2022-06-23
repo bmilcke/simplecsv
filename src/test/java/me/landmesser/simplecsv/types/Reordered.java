@@ -2,15 +2,12 @@ package me.landmesser.simplecsv.types;
 
 import me.landmesser.simplecsv.CSVColumnName;
 import me.landmesser.simplecsv.CSVOrderConstraint;
-import me.landmesser.simplecsv.CSVOrderConstraints;
 
 import java.math.BigDecimal;
 
-@CSVOrderConstraints({
-  @CSVOrderConstraint(value = "BananaBrand", before = "ZooAnimalCount"),
-  @CSVOrderConstraint(value = "CiderPrice", after = "AppleCount"),
-  @CSVOrderConstraint(value = "Field", after = "CiderPrice")
-})
+@CSVOrderConstraint(value = "BananaBrand", before = "ZooAnimalCount")
+@CSVOrderConstraint(value = "CiderPrice", after = "AppleCount")
+@CSVOrderConstraint(value = "Field", after = "CiderPrice")
 public class Reordered {
 
   int zooAnimalCount;

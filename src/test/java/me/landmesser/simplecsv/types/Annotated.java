@@ -4,7 +4,6 @@ import me.landmesser.simplecsv.CSVColumnName;
 import me.landmesser.simplecsv.CSVDateFormat;
 import me.landmesser.simplecsv.CSVIgnore;
 import me.landmesser.simplecsv.CSVUseConverter;
-import me.landmesser.simplecsv.CSVUseConverters;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,10 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@CSVUseConverters({
-  @CSVUseConverter(value = GermanBooleanConverter.class, forType = Boolean.class),
-  @CSVUseConverter(value = MyLocalDateTimeConverter.class, forType = LocalDateTime.class)
-})
+@CSVUseConverter(value = GermanBooleanConverter.class, forType = Boolean.class)
+@CSVUseConverter(value = MyLocalDateTimeConverter.class, forType = LocalDateTime.class)
 public class Annotated {
 
   @CSVColumnName("Custom")
