@@ -59,16 +59,14 @@ public class CSVWriter<T> extends ClassParser<T> implements Closeable {
    *                      {@link CSVPrinter} object.
    */
   public CSVWriter(Appendable writer, Class<T> type,
-                   CSVFormat format, boolean withHeaders) throws CSVException {
+                   final CSVFormat format, boolean withHeaders) throws CSVException {
     super(type);
-    if (format == null) {
-      format = CSVFormat.DEFAULT;
-    }
+    CSVFormat.Builder builder = CSVFormat.Builder.create(format == null ? CSVFormat.DEFAULT : format);
     if (withHeaders) {
-      format = format.withHeader(retrieveHeaders().toArray(String[]::new));
+      builder.setHeader(retrieveHeaders().toArray(String[]::new));
     }
     try {
-      this.printer = new CSVPrinter(writer, format);
+      this.printer = new CSVPrinter(writer, builder.build());
     } catch (IOException e) {
       throw new CSVException("Could not create CSVPrinter", e);
     }

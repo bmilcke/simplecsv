@@ -78,12 +78,8 @@ public class CSVReader<T> extends ClassParser<T> implements Closeable {
       final T result = getType().getConstructor().newInstance();
       Iterator<String> iterator = record.iterator();
       getEntries().forEach(entry -> {
-        try {
-          if (iterator.hasNext()) {
-            evaluate(result, iterator.next(), entry);
-          }
-        } catch (CSVParseException e) {
-          e.printStackTrace();
+        if (iterator.hasNext()) {
+          evaluate(result, iterator.next(), entry);
         }
       });
       return result;

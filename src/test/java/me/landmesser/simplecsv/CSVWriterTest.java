@@ -35,7 +35,7 @@ class CSVWriterTest {
     object.setDateOfBirth(LocalDate.of(1980, 4, 2));
 
     List<String> result = retrieveCSVString(object, Unannotated.class,
-      CSVFormat.RFC4180.withDelimiter(';'), true);
+      CSVFormat.Builder.create(CSVFormat.RFC4180).setDelimiter(';').build(), true);
     assertEquals(2, result.size());
     assertEquals("Firstname;Surname;Age;DateOfBirth;Member;WantsEmail;MemberSinceYear;TestEnum", result.get(0));
     assertEquals(";Smith;42;1980-04-02;false;;;", result.get(1));
@@ -46,7 +46,7 @@ class CSVWriterTest {
     object.setTestEnum(TestEnum.SECOND);
 
     result = retrieveCSVString(object, Unannotated.class,
-      CSVFormat.RFC4180.withDelimiter(';'), false);
+            CSVFormat.Builder.create(CSVFormat.RFC4180).setDelimiter(';').build(), false);
     assertEquals(1, result.size());
     assertEquals(";Smith;42;1980-04-02;true;true;2010;SECOND", result.get(0));
   }
@@ -76,7 +76,7 @@ class CSVWriterTest {
     ).collect(Collectors.toList()));
 
     List<String> result = retrieveCSVString(object, Annotated.class,
-      CSVFormat.EXCEL.withDelimiter(','), true);
+            CSVFormat.Builder.create(CSVFormat.RFC4180).setDelimiter(',').build(), true);
     assertEquals(2, result.size());
     assertEquals("Custom,Begin,End,Unannotated,Value,Checked,Old Date,DateList", result.get(0));
     assertEquals("Test,25.03.2019,\"Mittwoch, 25. März 2020\",,\"42,12\",falsch,07.12.2015 10:32,\"[1970-03-02,2004-02-29,2020-03-25]\"", result.get(1));

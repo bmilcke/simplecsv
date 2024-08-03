@@ -1,13 +1,11 @@
 package me.landmesser.simplecsv;
 
-import me.landmesser.simplecsv.util.OrderDirection;
 import me.landmesser.simplecsv.util.OrderEntry;
 import me.landmesser.simplecsv.util.StringUtils;
 import org.apache.commons.csv.CSVFormat;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -191,8 +189,7 @@ class ClassParser<T> {
   }
 
   private boolean isNotIgnored(Field field) {
-    return !Arrays.stream(field.getAnnotationsByType(CSVIgnore.class))
-      .findAny().isPresent();
+    return Arrays.stream(field.getAnnotationsByType(CSVIgnore.class)).findAny().isEmpty();
   }
 
   private void detectClassLevelConverters(Class<T> type) throws CSVException {
@@ -227,6 +224,6 @@ class ClassParser<T> {
 
   private void determineExportImportStrategy(Class<T> type) {
     Arrays.stream(type.getAnnotationsByType(CSVExportImportStrategy.class))
-      .findAny().ifPresent(strat -> exportImportStrategy = strat.value());
+      .findAny().ifPresent(strategy -> exportImportStrategy = strategy.value());
   }
 }

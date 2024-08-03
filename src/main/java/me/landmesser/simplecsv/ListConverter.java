@@ -20,19 +20,16 @@ class ListConverter<T> implements CSVConverter<List<T>> {
   private final char delimiter;
 
   private final CSVConverter<T> elementConverter;
-  private final Class<T> elemClass;
 
-  public ListConverter(Class<T> elemClass, CSVConverter<T> elementConverter) {
-    this.elemClass = elemClass;
+  public ListConverter(CSVConverter<T> elementConverter) {
     this.elementConverter = elementConverter;
     this.startChar = '[';
     this.endChar = ']';
     this.delimiter = ',';
   }
 
-  public ListConverter(Class<T> elemClass, CSVConverter<T> elementConverter,
+  public ListConverter(CSVConverter<T> elementConverter,
                        final char startChar, final char endChar, final char delimiter) {
-    this.elemClass = elemClass;
     this.elementConverter = elementConverter;
     this.startChar = startChar;
     this.endChar = endChar;
@@ -48,7 +45,8 @@ class ListConverter<T> implements CSVConverter<List<T>> {
       return "";
     }
     try (StringWriter sw = new StringWriter();
-         CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withDelimiter(delimiter))) {
+         CSVPrinter printer = new CSVPrinter(sw,
+                 CSVFormat.Builder.create(CSVFormat.DEFAULT).setDelimiter(delimiter).build())) {
       printer.printRecord(value.stream().map(Object::toString).collect(Collectors.toList()));
       return startChar + sw.toString().replaceAll("\\r?\\n", "") + endChar;
     } catch (IOException ex) {
@@ -69,7 +67,8 @@ class ListConverter<T> implements CSVConverter<List<T>> {
     }
     List<T> result = new ArrayList<>();
     try (StringReader sr = new StringReader(value.substring(1, value.length() - 1));
-         CSVParser parser = new CSVParser(sr, CSVFormat.DEFAULT.withDelimiter(delimiter))) {
+         CSVParser parser = new CSVParser(sr,
+                 CSVFormat.Builder.create(CSVFormat.DEFAULT).setDelimiter(delimiter).build())) {
       List<CSVRecord> records = parser.getRecords();
       if (records.size() != 1) {
         throw new CSVParseException("Invalid number of records during parsing list");

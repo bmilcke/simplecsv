@@ -26,59 +26,63 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CSVReaderTest {
 
-  @Test
-  void unannotated() throws IOException {
-    try (InputStream inp = getClass().getResourceAsStream("/unannotated.csv");
-         Reader stringReader = new InputStreamReader(inp);
-         CSVReader<Unannotated> reader = new CSVReader<>(
-           stringReader, Unannotated.class,
-           CSVFormat.RFC4180.withDelimiter(',').withFirstRecordAsHeader().withSkipHeaderRecord())) {
-      List<Unannotated> result = reader.read().collect(Collectors.toList());
-      assertEquals(1, result.size());
+    @Test
+    void unannotated() throws IOException {
+        InputStream inp = getClass().getResourceAsStream("/unannotated.csv");
+        assertNotNull(inp);
+        try (inp;
+             Reader stringReader = new InputStreamReader(inp);
+             CSVReader<Unannotated> reader = new CSVReader<>(
+                     stringReader, Unannotated.class,
+                     CSVFormat.Builder.create(CSVFormat.RFC4180)
+                             .setDelimiter(',').setHeader().setSkipHeaderRecord(true).build())) {
+            List<Unannotated> result = reader.read().collect(Collectors.toList());
+            assertEquals(1, result.size());
 
-      Unannotated resultObject = result.get(0);
-      assertNull(resultObject.getFirstname());
-      assertEquals("Smith", resultObject.getSurname());
-      assertEquals(42, resultObject.getAge());
-      assertEquals(LocalDate.of(1980, 4, 2), resultObject.getDateOfBirth());
-      assertTrue(resultObject.isMember());
-      assertNotNull(resultObject.getWantsEmail());
-      assertTrue(resultObject.getWantsEmail());
-      assertEquals(2010, resultObject.getMemberSinceYear());
-      assertEquals(TestEnum.SECOND, resultObject.getTestEnum());
+            Unannotated resultObject = result.get(0);
+            assertNull(resultObject.getFirstname());
+            assertEquals("Smith", resultObject.getSurname());
+            assertEquals(42, resultObject.getAge());
+            assertEquals(LocalDate.of(1980, 4, 2), resultObject.getDateOfBirth());
+            assertTrue(resultObject.isMember());
+            assertNotNull(resultObject.getWantsEmail());
+            assertTrue(resultObject.getWantsEmail());
+            assertEquals(2010, resultObject.getMemberSinceYear());
+            assertEquals(TestEnum.SECOND, resultObject.getTestEnum());
+        }
     }
-  }
 
-  @Test
-  void allTypes() throws IOException {
-    try (InputStream inp = getClass().getResourceAsStream("/types.csv");
-         Reader stringReader = new InputStreamReader(inp);
-         CSVReader<Types> reader = new CSVReader<>(
-           stringReader, Types.class,
-           CSVFormat.RFC4180.withDelimiter(',')
-             .withFirstRecordAsHeader().withSkipHeaderRecord())) {
-      List<Types> result = reader.read().collect(Collectors.toList());
-      assertEquals(2, result.size());
+    @Test
+    void allTypes() throws IOException {
+        InputStream inp = getClass().getResourceAsStream("/types.csv");
+        assertNotNull(inp);
+        try (inp; Reader stringReader = new InputStreamReader(inp);
+             CSVReader<Types> reader = new CSVReader<>(
+                     stringReader, Types.class,
+                     CSVFormat.Builder.create(CSVFormat.RFC4180)
+                             .setDelimiter(',').setHeader().setSkipHeaderRecord(true).build())) {
+            List<Types> result = reader.read().collect(Collectors.toList());
+            assertEquals(2, result.size());
 
-      Types t1 = result.get(0);
-      assertEquals("One, Two, Three", t1.getString());
-      assertEquals(42, t1.getPrimInt());
-      assertEquals('x', t1.getPrimChar());
-      assertFalse(t1.isPrimBoolean());
-      assertEquals(256, t1.getInteger());
-      assertEquals('*', t1.getCharacter());
-      assertNull(t1.getBooleanVal());
-      assertEquals(BigDecimal.valueOf(32545, 2), t1.getBigDecimal());
-      assertEquals(LocalTime.of(3, 22, 3, 100_000_000), t1.getLocalTime());
-      assertEquals(LocalDate.of(2020, 2, 21), t1.getLocalDate());
-      assertEquals(LocalDateTime.of(2020, 1, 12, 22, 13, 2), t1.getLocalDateTime());
-      assertEquals(TestEnum.THIRD, t1.getTestEnum());
-      assertEquals(1549984952130L, t1.getOldSchool().getTime());
-      List<BigDecimal> expected = new ArrayList<>();
-      expected.add(BigDecimal.valueOf(312, 2));
-      expected.add(BigDecimal.valueOf(42));
-      expected.add(BigDecimal.valueOf(-212123, 3));
-      assertEquals(expected, t1.getNumberList());
+            Types t1 = result.get(0);
+            assertEquals("One, Two, Three", t1.getString());
+            assertEquals(42, t1.getPrimInt());
+            assertEquals('x', t1.getPrimChar());
+            assertFalse(t1.isPrimBoolean());
+            assertEquals(256, t1.getInteger());
+            assertEquals('*', t1.getCharacter());
+            assertNull(t1.getBooleanVal());
+            assertEquals(BigDecimal.valueOf(32545, 2), t1.getBigDecimal());
+            assertEquals(LocalTime.of(3, 22, 3, 100_000_000), t1.getLocalTime());
+            assertEquals(LocalDate.of(2020, 2, 21), t1.getLocalDate());
+            assertEquals(LocalDateTime.of(2020, 1, 12, 22, 13, 2), t1.getLocalDateTime());
+            assertEquals(TestEnum.THIRD, t1.getTestEnum());
+            assertEquals(1549984952130L, t1.getOldSchool().getTime());
+            List<BigDecimal> expected = new ArrayList<>();
+            expected.add(BigDecimal.valueOf(312, 2));
+            expected.add(BigDecimal.valueOf(42));
+            expected.add(BigDecimal.valueOf(-212123, 3));
+            assertEquals(expected, t1.getNumberList());
+        }
     }
-  }
 }

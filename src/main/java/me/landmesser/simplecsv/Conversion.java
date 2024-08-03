@@ -92,7 +92,7 @@ class Conversion {
       return new TemporalAccessorConverter(type);
     }
     if (List.class.isAssignableFrom(type) && !genericTypes.isEmpty()) {
-      return new ListConverter(genericTypes.get(0), getConverterForType(genericTypes.get(0), Collections.emptyList()));
+      return new ListConverter(getConverterForType(genericTypes.get(0), Collections.emptyList()));
     }
     return null;
   }
